@@ -4,18 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Reference — CommandCrafter</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="inner">
-    <a class="brand" href="index.html">Command<span>Crafter</span></a>
+    <a class="brand" href="index.html"><span data-icon="cube"></span>Command<span>Crafter</span></a>
     <nav class="site-nav">
-      <a href="index.html">Home</a>
-      <a href="build.html">Build</a>
-      <a href="npc.html">NPCs</a>
-      <a href="reference.html">Reference</a>
+      <a href="index.html"><span data-icon="home"></span>Home</a>
+      <a href="build.html"><span data-icon="cube"></span>Build</a>
+      <a href="npc.html"><span data-icon="npc"></span>NPCs</a>
+      <a href="notes.html"><span data-icon="note"></span>Notes</a>
+      <a href="reference.html"><span data-icon="book"></span>Reference</a>
     </nav>
     <span class="edition-badge">Bedrock Edition</span>
   </div>
@@ -30,7 +32,7 @@
 
   <!-- ---------------- coordinates ---------------- -->
   <section class="ref-section">
-    <h2>Coordinates</h2>
+    <h2><span data-icon="cube"></span>Coordinates</h2>
 
     <div class="table-scroll">
       <table class="ref">
@@ -61,7 +63,7 @@
 
   <!-- ---------------- fill ---------------- -->
   <section class="ref-section">
-    <h2>/fill</h2>
+    <h2><span data-icon="cube"></span>/fill</h2>
 
     <pre class="syntax">/fill &lt;x1 y1 z1&gt; &lt;x2 y2 z2&gt; &lt;block&gt; [data] [mode] [replaceBlock] [replaceData]</pre>
 
@@ -97,15 +99,16 @@
     <pre class="syntax">/fill ~ ~ ~ ~10 ~4 ~10 stone_brick["stone_brick_type"="mossy"]</pre>
 
     <p class="msg warn">
-      <strong>Size limit.</strong> /fill and /clone both stop at 32,768 blocks
+      <span data-icon="warn"></span>
+      <span><strong>Size limit.</strong> /fill and /clone both stop at 32,768 blocks
       (32 × 32 × 32). Bigger jobs have to be split — stepping the Y range a few
-      layers at a time is usually the least confusing way.
+      layers at a time is usually the least confusing way.</span>
     </p>
   </section>
 
   <!-- ---------------- clone ---------------- -->
   <section class="ref-section">
-    <h2>/clone</h2>
+    <h2><span data-icon="clone"></span>/clone</h2>
 
     <pre class="syntax">/clone &lt;x1 y1 z1&gt; &lt;x2 y2 z2&gt; &lt;destination&gt; [maskMode] [cloneMode] [block] [data]</pre>
 
@@ -140,7 +143,7 @@
 
   <!-- ---------------- selectors ---------------- -->
   <section class="ref-section">
-    <h2>Selectors</h2>
+    <h2><span data-icon="npc"></span>Selectors</h2>
 
     <div class="table-scroll">
       <table class="ref">
@@ -169,10 +172,11 @@
     </div>
 
     <p class="msg warn">
-      <strong>dx/dy/dz are sizes, not the far corner.</strong>
+      <span data-icon="warn"></span>
+      <span><strong>dx/dy/dz are sizes, not the far corner.</strong>
       <code>x=100,dx=10</code> covers X 100 to 110. Putting the second corner's
       coordinate in there selects a region far bigger — or entirely elsewhere —
-      than you meant.
+      than you meant.</span>
     </p>
 
     <h3>Ranges</h3>
@@ -193,7 +197,7 @@
 
   <!-- ---------------- NPC ---------------- -->
   <section class="ref-section">
-    <h2>NPCs and dialogue</h2>
+    <h2><span data-icon="speech"></span>NPCs and dialogue</h2>
 
     <h3>Making one</h3>
     <p>
@@ -238,7 +242,7 @@
 
   <!-- ---------------- scoreboard ---------------- -->
   <section class="ref-section">
-    <h2>Scoreboards</h2>
+    <h2><span data-icon="chart"></span>Scoreboards</h2>
 
     <pre class="syntax">/scoreboard objectives add Coins dummy "Coins"
 /scoreboard objectives setdisplay sidebar Coins
@@ -258,7 +262,7 @@
 
   <!-- ---------------- command blocks ---------------- -->
   <section class="ref-section">
-    <h2>Command blocks</h2>
+    <h2><span data-icon="block"></span>Command blocks</h2>
 
     <div class="table-scroll">
       <table class="ref">
@@ -306,7 +310,7 @@
 
   <!-- ---------------- colours ---------------- -->
   <section class="ref-section">
-    <h2>Colour codes</h2>
+    <h2><span data-icon="tag"></span>Colour codes</h2>
     <p>Put these at the front of message text in <code>/title</code> and <code>/say</code>.</p>
     <div class="table-scroll">
       <table class="ref">
@@ -328,7 +332,7 @@
 
   <!-- ---------------- gotchas ---------------- -->
   <section class="ref-section">
-    <h2>Things that quietly go wrong</h2>
+    <h2><span data-icon="warn"></span>Things that quietly go wrong</h2>
     <ul>
       <li><strong>/kill @e with no type</strong> kills you as well. Always add a type, or <code>type=!player</code>.</li>
       <li><strong>dx/dy/dz</strong> are region sizes, not the second corner.</li>
@@ -347,6 +351,7 @@
   Not affiliated with Mojang or Microsoft.
 </footer>
 
+<script src="assets/js/icons.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/common.js"></script>
 </body>

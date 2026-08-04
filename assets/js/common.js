@@ -43,20 +43,69 @@ function coordToken(raw, relative) {
   return v;
 }
 
-/* Reads a coord group built by coordGroupHTML(). Returns
+/* Pulls three coordinates out of whatever got pasted in. Handles the shapes
+   coordinates actually turn up in:
+
+     607 62 1238
+     -394.74 66.00 -300.93        (the game's own position readout)
+     -337, 64, -318
+     x: 80 y: 70 z: -513
+     /tp 80 70 -513
+     Mizerville market: -337 64 -318
+     ~ ~-1 ~
+
+   Decimals get floored, because that is the block a position sits in. When a
+   label contains its own digits ("Cell 1: -320 55 -302") the last three
+   numbers are the coordinates, so those are the ones taken. */
+
+var COORD_TOKEN_RE = /[~^]-?\d+(?:\.\d+)?|[~^]|-?\d+(?:\.\d+)?/g;
+
+function parseCoordSet(raw) {
+  var found = String(raw == null ? '' : raw).match(COORD_TOKEN_RE) || [];
+  var picked = found.length > 3 ? found.slice(found.length - 3) : found;
+  var rounded = false;
+
+  var tokens = picked.map(function (tok) {
+    var m = /^([~^]?)(-?\d+(?:\.\d+)?)?$/.exec(tok);
+    if (!m) return tok;
+    var prefix = m[1] || '';
+    if (m[2] === undefined) return prefix;
+    var n = Number(m[2]);
+    var floored = Math.floor(n);
+    if (floored !== n) rounded = true;
+    return (prefix && floored === 0) ? prefix : prefix + floored;
+  });
+
+  return {
+    tokens: tokens,
+    count: picked.length,
+    rounded: rounded,
+    trimmed: found.length > 3
+  };
+}
+
+/* Reads one coordinate group. Returns
    { tokens: ["607","62","1238"], text: "607 62 1238", missing: [...] } */
 function readCoords(prefix) {
   var rel = isChecked(prefix + '-rel');
-  var axes = ['x', 'y', 'z'];
+  var parsed = parseCoordSet(val(prefix + '-coords'));
+  var axes = ['X', 'Y', 'Z'];
   var tokens = [];
   var missing = [];
-  for (var i = 0; i < axes.length; i++) {
-    var raw = val(prefix + '-' + axes[i]);
-    var tok = coordToken(raw, rel);
-    if (tok === '') missing.push(axes[i].toUpperCase());
+
+  for (var i = 0; i < 3; i++) {
+    var tok = coordToken(parsed.tokens[i] === undefined ? '' : parsed.tokens[i], rel);
+    if (tok === '') missing.push(axes[i]);
     tokens.push(tok);
   }
-  return { tokens: tokens, text: tokens.join(' '), missing: missing, relative: rel };
+
+  return {
+    tokens: tokens,
+    text: tokens.join(' '),
+    missing: missing,
+    relative: rel,
+    rounded: parsed.rounded
+  };
 }
 
 /* Splits a token into { rel: '' | '~' | '^', n: Number } or null if unparseable. */
@@ -93,8 +142,13 @@ var COORD_OK = /^(~-?\d*(\.\d+)?|\^-?\d*(\.\d+)?|-?\d+(\.\d+)?)$/;
 
 function badCoords(coords, label) {
   var problems = [];
+  if (coords.missing.length === 3) {
+    problems.push(label + ': enter three coordinates, like 607 62 1238');
+    return problems;
+  }
   if (coords.missing.length) {
-    problems.push(label + ': fill in ' + coords.missing.join(', '));
+    problems.push(label + ': only found ' + (3 - coords.missing.length) +
+      ' of the 3 coordinates — missing ' + coords.missing.join(' and '));
     return problems;
   }
   for (var i = 0; i < coords.tokens.length; i++) {
@@ -113,14 +167,28 @@ function cleanId(raw) {
 /* ---------------- clipboard ---------------- */
 
 function copyText(text, btn) {
+  function swap(iconName, labelText) {
+    var slot = btn.querySelector('.icon-slot');
+    var label = btn.querySelector('.btn-label');
+    if (slot) {
+      slot.innerHTML = '';
+      slot.appendChild(iconEl(iconName));
+    }
+    if (label) label.textContent = labelText;
+  }
+
   function done() {
     if (!btn) return;
-    var original = btn.getAttribute('data-label') || btn.textContent;
+    var label = btn.querySelector('.btn-label');
+    var original = btn.getAttribute('data-label') ||
+      (label ? label.textContent : btn.textContent);
     btn.setAttribute('data-label', original);
-    btn.textContent = 'Copied';
+
+    swap('check', 'Copied');
     btn.classList.add('copied');
+
     setTimeout(function () {
-      btn.textContent = original;
+      swap('copy', original);
       btn.classList.remove('copied');
     }, 1200);
   }
@@ -165,10 +233,22 @@ function render(containerId, result) {
   var messages = result.messages || [];
   var i, j;
 
+  var MSG_ICON = { info: 'info', warn: 'warn', error: 'error' };
+
   for (i = 0; i < messages.length; i++) {
+    var type = messages[i].type || 'info';
     var m = document.createElement('div');
-    m.className = 'msg ' + (messages[i].type || 'info');
-    m.textContent = messages[i].text;
+    m.className = 'msg ' + type;
+
+    var badge = document.createElement('span');
+    badge.setAttribute('data-icon', MSG_ICON[type] || 'info');
+    badge.appendChild(iconEl(MSG_ICON[type] || 'info'));
+    m.appendChild(badge);
+
+    var body = document.createElement('span');
+    body.textContent = messages[i].text;
+    m.appendChild(body);
+
     box.appendChild(m);
   }
 
@@ -206,7 +286,15 @@ function render(containerId, result) {
 
       var title = document.createElement('span');
       title.className = 'out-group-title' + (g.tone ? ' ' + g.tone : '');
-      title.textContent = g.title || '';
+      if (g.tone === 'ok' || g.tone === 'fail') {
+        var mark = document.createElement('span');
+        mark.setAttribute('data-icon', g.tone === 'ok' ? 'check' : 'warn');
+        mark.appendChild(iconEl(g.tone === 'ok' ? 'check' : 'warn'));
+        title.appendChild(mark);
+      }
+      var titleText = document.createElement('span');
+      titleText.textContent = g.title || '';
+      title.appendChild(titleText);
       head.appendChild(title);
 
       if (g.commands.length > 1) {
@@ -254,7 +342,17 @@ function copyButton(text, label) {
   var btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'small';
-  btn.textContent = label;
+
+  var slot = document.createElement('span');
+  slot.className = 'icon-slot';
+  slot.appendChild(iconEl('copy'));
+  btn.appendChild(slot);
+
+  var caption = document.createElement('span');
+  caption.className = 'btn-label';
+  caption.textContent = label;
+  btn.appendChild(caption);
+
   btn.addEventListener('click', function () { copyText(text, btn); });
   return btn;
 }
@@ -309,7 +407,56 @@ function submitOnEnter(toolId, generateFn) {
   });
 }
 
+/* Live "X 607  Y 62  Z 1238" readout under each coordinate field, so it is
+   obvious what got parsed out of a pasted line before you generate anything. */
+
+function updateCoordReadout(prefix) {
+  var out = $(prefix + '-readout');
+  if (!out) return;
+
+  var raw = val(prefix + '-coords');
+  var rel = isChecked(prefix + '-rel');
+
+  if (raw === '') {
+    out.className = 'coord-readout';
+    out.textContent = rel ? 'Empty means ~ ~ ~ — wherever you are standing.' : '';
+    return;
+  }
+
+  var parsed = parseCoordSet(raw);
+  if (parsed.count < 3) {
+    out.className = 'coord-readout bad';
+    out.textContent = 'Found ' + parsed.count + ' of 3 coordinates.';
+    return;
+  }
+
+  var coords = readCoords(prefix);
+  var text = 'X ' + coords.tokens[0] + '   Y ' + coords.tokens[1] +
+    '   Z ' + coords.tokens[2];
+  if (parsed.rounded) text += '   · rounded down to whole blocks';
+  if (parsed.trimmed) text += '   · read the last three numbers';
+
+  out.className = 'coord-readout ok';
+  out.textContent = text;
+}
+
+function wireCoordReadouts() {
+  var inputs = document.querySelectorAll('input[id$="-coords"]');
+  for (var i = 0; i < inputs.length; i++) {
+    (function (input) {
+      var prefix = input.id.replace(/-coords$/, '');
+      var update = function () { updateCoordReadout(prefix); };
+      input.addEventListener('input', update);
+      var rel = $(prefix + '-rel');
+      if (rel) rel.addEventListener('change', update);
+      update();
+    })(inputs[i]);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', function () {
+  injectIcons();
   fillDatalists();
   markActiveNav();
+  wireCoordReadouts();
 });

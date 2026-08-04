@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes — CommandCrafter</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html"><span data-icon="cube"></span>Command<span>Crafter</span></a>
+    <nav class="site-nav">
+      <a href="index.html"><span data-icon="home"></span>Home</a>
+      <a href="build.html"><span data-icon="cube"></span>Build</a>
+      <a href="npc.html"><span data-icon="npc"></span>NPCs</a>
+      <a href="notes.html"><span data-icon="note"></span>Notes</a>
+      <a href="reference.html"><span data-icon="book"></span>Reference</a>
+    </nav>
+    <span class="edition-badge">Bedrock Edition</span>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Notes</h1>
+  <p class="page-intro">
+    Coordinates, block palettes, half-built command chains, who sells what.
+    Notes are saved in this browser on this computer — nothing is uploaded
+    anywhere. Export them now and then so a cleared cache can't take them with it.
+  </p>
+
+  <div id="notes-warning"></div>
+
+  <section class="tool" id="tool-note-editor">
+    <h2><span data-icon="plus"></span>New note <span class="cmd-name" id="note-editing-label"></span></h2>
+    <div class="tool-body">
+      <div class="field-row">
+        <div class="field wide">
+          <label for="note-title">Title</label>
+          <input type="text" id="note-title" placeholder="Mizerville vendor coords" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field wide">
+          <label for="note-body">Note</label>
+          <textarea id="note-body" rows="8" spellcheck="false"
+                    placeholder="Market: -337 64 -318&#10;Mines: -384 8 -327&#10;&#10;Arena spawn block: -388 57 -290"></textarea>
+          <span class="hint">Ctrl+Enter saves.</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="note-save">
+          <span class="icon-slot" data-icon="plus"></span><span class="btn-label">Save note</span>
+        </button>
+        <button type="button" id="note-cancel" style="display:none">
+          <span class="btn-label">Cancel</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-notes-list">
+    <h2><span data-icon="note"></span>Saved notes <span class="cmd-name" id="notes-count"></span></h2>
+    <div class="tool-body">
+      <div class="field-row">
+        <div class="field grow">
+          <label for="note-search">Search</label>
+          <input type="text" id="note-search" placeholder="coords, vendor, redstone…" autocomplete="off">
+        </div>
+        <div class="actions">
+          <button type="button" id="note-export-txt">
+            <span class="icon-slot" data-icon="download"></span><span class="btn-label">Export .txt</span>
+          </button>
+          <button type="button" id="note-export-json">
+            <span class="icon-slot" data-icon="download"></span><span class="btn-label">Export .json</span>
+          </button>
+          <button type="button" id="note-import">
+            <span class="icon-slot" data-icon="upload"></span><span class="btn-label">Import</span>
+          </button>
+          <input type="file" id="note-import-file" accept="application/json,.json" style="display:none">
+        </div>
+      </div>
+
+      <div id="notes-list" class="notes-list"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  CommandCrafter — Minecraft Bedrock command builder.
+  Not affiliated with Mojang or Microsoft.
+</footer>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/notes.js"></script>
+</body>
+</html>

@@ -4,18 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NPC Commands — CommandCrafter</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="inner">
-    <a class="brand" href="index.html">Command<span>Crafter</span></a>
+    <a class="brand" href="index.html"><span data-icon="cube"></span>Command<span>Crafter</span></a>
     <nav class="site-nav">
-      <a href="index.html">Home</a>
-      <a href="build.html">Build</a>
-      <a href="npc.html">NPCs</a>
-      <a href="reference.html">Reference</a>
+      <a href="index.html"><span data-icon="home"></span>Home</a>
+      <a href="build.html"><span data-icon="cube"></span>Build</a>
+      <a href="npc.html"><span data-icon="npc"></span>NPCs</a>
+      <a href="notes.html"><span data-icon="note"></span>Notes</a>
+      <a href="reference.html"><span data-icon="book"></span>Reference</a>
     </nav>
     <span class="edition-badge">Bedrock Edition</span>
   </div>
@@ -31,7 +33,7 @@
 
   <!-- ============================ DIALOGUE ============================ -->
   <section class="tool" id="tool-dialogue">
-    <h2>Open a dialogue scene <span class="cmd-name">/dialogue</span></h2>
+    <h2><span data-icon="speech"></span>Open a dialogue scene <span class="cmd-name">/dialogue</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
         Sends a player into a named scene on a tagged NPC. This is what a
@@ -68,7 +70,7 @@
 
   <!-- ============================ SELL ============================ -->
   <section class="tool" id="tool-sell">
-    <h2>Vendor sells to the player <span class="cmd-name">buy button</span></h2>
+    <h2><span data-icon="tag"></span>Vendor sells to the player <span class="cmd-name">buy button</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
         The player spends points and gets items. Produces both branches — the
@@ -155,7 +157,7 @@ cooked_chicken 2"></textarea>
 
   <!-- ============================ BUY ============================ -->
   <section class="tool" id="tool-buy">
-    <h2>Vendor buys from the player <span class="cmd-name">sell button</span></h2>
+    <h2><span data-icon="coins"></span>Vendor buys from the player <span class="cmd-name">sell button</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
         The player hands over items and gets points. Checks the player's
@@ -241,7 +243,7 @@ cooked_chicken 2"></textarea>
 
   <!-- ============================ SCOREBOARD ============================ -->
   <section class="tool" id="tool-scoreboard">
-    <h2>Set up a scoreboard <span class="cmd-name">/scoreboard</span></h2>
+    <h2><span data-icon="chart"></span>Set up a scoreboard <span class="cmd-name">/scoreboard</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
         Every currency, quest flag and purchase counter needs an objective before
@@ -283,7 +285,7 @@ cooked_chicken 2"></textarea>
 
   <!-- ======================= SUMMON SHOP ======================= -->
   <section class="tool" id="tool-summon-shop">
-    <h2>Livestock / summon vendor <span class="cmd-name">redstone chain</span></h2>
+    <h2><span data-icon="egg"></span>Livestock / summon vendor <span class="cmd-name">redstone chain</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
         A dialogue button can't summon a mob on its own, so it sets a flag score
@@ -317,11 +319,9 @@ cooked_chicken 2"></textarea>
             <span>Spawn point</span>
             <label class="rel-toggle"><input type="checkbox" id="ss-spawn-rel"> relative (~)</label>
           </div>
-          <div class="coord-inputs">
-            <div class="field"><label for="ss-spawn-x">X</label><input type="text" id="ss-spawn-x"></div>
-            <div class="field"><label for="ss-spawn-y">Y</label><input type="text" id="ss-spawn-y"></div>
-            <div class="field"><label for="ss-spawn-z">Z</label><input type="text" id="ss-spawn-z"></div>
-          </div>
+          <input type="text" class="coord-input" id="ss-spawn-coords"
+                 placeholder="-297 63 -320" autocomplete="off" spellcheck="false">
+          <div class="coord-readout" id="ss-spawn-readout"></div>
         </div>
 
         <div class="coord-group">
@@ -329,11 +329,9 @@ cooked_chicken 2"></textarea>
             <span>Redstone trigger block</span>
             <label class="rel-toggle"><input type="checkbox" id="ss-redstone-rel"> relative (~)</label>
           </div>
-          <div class="coord-inputs">
-            <div class="field"><label for="ss-redstone-x">X</label><input type="text" id="ss-redstone-x"></div>
-            <div class="field"><label for="ss-redstone-y">Y</label><input type="text" id="ss-redstone-y"></div>
-            <div class="field"><label for="ss-redstone-z">Z</label><input type="text" id="ss-redstone-z"></div>
-          </div>
+          <input type="text" class="coord-input" id="ss-redstone-coords"
+                 placeholder="-293 57 -320" autocomplete="off" spellcheck="false">
+          <div class="coord-readout" id="ss-redstone-readout"></div>
         </div>
       </div>
 
@@ -361,7 +359,7 @@ cooked_chicken 2"></textarea>
 
   <!-- ======================= TAG CHAIN ======================= -->
   <section class="tool" id="tool-tag-chain">
-    <h2>Tag-driven purchase chain <span class="cmd-name">command blocks</span></h2>
+    <h2><span data-icon="link"></span>Tag-driven purchase chain <span class="cmd-name">command blocks</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
         The other way round: the dialogue button just tags the player, and a pair
@@ -402,11 +400,9 @@ cooked_chicken 2"></textarea>
             <span>Redstone block to reset</span>
             <label class="rel-toggle"><input type="checkbox" id="tc-reset-rel"> relative (~)</label>
           </div>
-          <div class="coord-inputs">
-            <div class="field"><label for="tc-reset-x">X</label><input type="text" id="tc-reset-x"></div>
-            <div class="field"><label for="tc-reset-y">Y</label><input type="text" id="tc-reset-y"></div>
-            <div class="field"><label for="tc-reset-z">Z</label><input type="text" id="tc-reset-z"></div>
-          </div>
+          <input type="text" class="coord-input" id="tc-reset-coords"
+                 placeholder="-293 53 -320" autocomplete="off" spellcheck="false">
+          <div class="coord-readout" id="tc-reset-readout"></div>
         </div>
       </div>
 
@@ -430,7 +426,7 @@ cooked_chicken 2"></textarea>
 
   <!-- ======================= ACCESS LOCK ======================= -->
   <section class="tool" id="tool-access-lock">
-    <h2>Lock an area to tagged players <span class="cmd-name">access control</span></h2>
+    <h2><span data-icon="lock"></span>Lock an area to tagged players <span class="cmd-name">access control</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
         Teleports anyone without the access tag back out, and warns them on the way
@@ -443,11 +439,9 @@ cooked_chicken 2"></textarea>
             <span>Centre of the protected area</span>
             <label class="rel-toggle"><input type="checkbox" id="al-area-rel"> relative (~)</label>
           </div>
-          <div class="coord-inputs">
-            <div class="field"><label for="al-area-x">X</label><input type="text" id="al-area-x"></div>
-            <div class="field"><label for="al-area-y">Y</label><input type="text" id="al-area-y"></div>
-            <div class="field"><label for="al-area-z">Z</label><input type="text" id="al-area-z"></div>
-          </div>
+          <input type="text" class="coord-input" id="al-area-coords"
+                 placeholder="80 70 -523" autocomplete="off" spellcheck="false">
+          <div class="coord-readout" id="al-area-readout"></div>
         </div>
 
         <div class="coord-group">
@@ -455,11 +449,9 @@ cooked_chicken 2"></textarea>
             <span>Send trespassers to</span>
             <label class="rel-toggle"><input type="checkbox" id="al-send-rel"> relative (~)</label>
           </div>
-          <div class="coord-inputs">
-            <div class="field"><label for="al-send-x">X</label><input type="text" id="al-send-x"></div>
-            <div class="field"><label for="al-send-y">Y</label><input type="text" id="al-send-y"></div>
-            <div class="field"><label for="al-send-z">Z</label><input type="text" id="al-send-z"></div>
-          </div>
+          <input type="text" class="coord-input" id="al-send-coords"
+                 placeholder="80 70 -491" autocomplete="off" spellcheck="false">
+          <div class="coord-readout" id="al-send-readout"></div>
         </div>
       </div>
 
@@ -499,6 +491,7 @@ cooked_chicken 2"></textarea>
 <datalist id="entities-list"></datalist>
 <datalist id="sounds-list"></datalist>
 
+<script src="assets/js/icons.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/common.js"></script>
 <script src="assets/js/npc.js"></script>

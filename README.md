@@ -13,6 +13,7 @@ dialogue.
 | `index.html` | Landing page |
 | `build.html` | `/fill`, `/clone`, `/setblock`, clearing entities from a region |
 | `npc.html` | Vendor buy/sell buttons, `/dialogue`, scoreboards, redstone summon chains, area locks |
+| `notes.html` | Free-form notes, saved in the browser, with search and export |
 | `reference.html` | Bedrock syntax: coordinates, selectors, ranges, command blocks, colour codes |
 
 ## Running it
@@ -53,20 +54,52 @@ A few things the generators handle so you don't have to:
 
 ## Coordinates
 
-Every coordinate field takes an absolute number (`607`) or a tilde offset (`~-1`).
-Tick **relative** on a corner and you can type just the offset — `-1` becomes
-`~-1`, and leaving the box empty gives you `~`.
+A coordinate set goes in **one box**, so you can paste a whole line straight out
+of the game or out of a notes file. All of these read correctly:
+
+```
+607 62 1238
+-394.74 66.00 -300.93        the game's own position readout
+-337, 64, -318
+x: 80 y: 70 z: -513
+/tp 80 70 -513
+Mizerville market: -337 64 -318
+~ ~-1 ~
+```
+
+Decimals are rounded **down** to the block the position sits in. When a label
+carries its own digits — `Cell 1: -320 55 -302` — the last three numbers are
+taken as the coordinates. A readout under the field shows what was parsed before
+you generate anything.
+
+Tick **relative** to turn the numbers into tilde offsets: `-1` becomes `~-1`, and
+an empty box becomes `~`.
+
+## Notes
+
+The notes page keeps free-form notes in the browser's `localStorage` — on that
+machine, in that browser. Nothing is uploaded anywhere, and nothing is shared
+between computers.
+
+That also means clearing site data deletes them, so there are **Export .txt** and
+**Export .json** buttons; the `.json` can be imported back. Import adds to what is
+already saved rather than replacing it. Opened directly from disk, some browsers
+block `localStorage` outright — the page detects this and says so instead of
+pretending to have saved.
 
 ## Project layout
 
 ```
-index.html          build.html          npc.html          reference.html
+index.html   build.html   npc.html   notes.html   reference.html
 assets/
+  favicon.svg
   css/style.css
+  js/icons.js       inline SVG icon set
   js/common.js      shared helpers: coordinates, clipboard, output rendering
   js/data.js        block / item / entity / sound autocomplete lists
   js/build.js       build command generators
   js/npc.js         NPC and gameplay-logic generators
+  js/notes.js       notes storage, search, export and import
 ```
 
 Plain HTML, CSS and JavaScript — no framework, no bundler, no `node_modules`.

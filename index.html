@@ -4,18 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CommandCrafter — Minecraft Bedrock command builder</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="inner">
-    <a class="brand" href="index.html">Command<span>Crafter</span></a>
+    <a class="brand" href="index.html"><span data-icon="cube"></span>Command<span>Crafter</span></a>
     <nav class="site-nav">
-      <a href="index.html">Home</a>
-      <a href="build.html">Build</a>
-      <a href="npc.html">NPCs</a>
-      <a href="reference.html">Reference</a>
+      <a href="index.html"><span data-icon="home"></span>Home</a>
+      <a href="build.html"><span data-icon="cube"></span>Build</a>
+      <a href="npc.html"><span data-icon="npc"></span>NPCs</a>
+      <a href="notes.html"><span data-icon="note"></span>Notes</a>
+      <a href="reference.html"><span data-icon="book"></span>Reference</a>
     </nav>
     <span class="edition-badge">Bedrock Edition</span>
   </div>
@@ -31,7 +33,7 @@
 
   <div class="card-grid">
     <a class="card" href="build.html">
-      <h3>Build commands →</h3>
+      <h3><span data-icon="cube"></span>Build commands</h3>
       <p>Everything for putting blocks in the world.</p>
       <ul>
         <li>/fill — solid, outline, hollow, replace-one-block</li>
@@ -42,7 +44,7 @@
     </a>
 
     <a class="card" href="npc.html">
-      <h3>NPC commands →</h3>
+      <h3><span data-icon="npc"></span>NPC commands</h3>
       <p>Dialogue buttons, shops and the logic behind them.</p>
       <ul>
         <li>Vendors that sell to and buy from players</li>
@@ -52,8 +54,19 @@
       </ul>
     </a>
 
+    <a class="card" href="notes.html">
+      <h3><span data-icon="note"></span>Notes</h3>
+      <p>Somewhere to keep the things you keep re-finding.</p>
+      <ul>
+        <li>Coordinates, palettes, vendor stock</li>
+        <li>Search across everything you've saved</li>
+        <li>Copy any note in one click</li>
+        <li>Export to .txt or .json for safekeeping</li>
+      </ul>
+    </a>
+
     <a class="card" href="reference.html">
-      <h3>Reference →</h3>
+      <h3><span data-icon="book"></span>Reference</h3>
       <p>The syntax, without digging through a wiki.</p>
       <ul>
         <li>Coordinates and tilde offsets</li>
@@ -65,7 +78,7 @@
   </div>
 
   <section class="tool">
-    <h2>How it works</h2>
+    <h2><span data-icon="info"></span>How it works</h2>
     <div class="tool-body">
       <p class="tool-desc">
         Every generator produces the full set of commands in the order they have to
@@ -75,9 +88,11 @@
         and explains why.
       </p>
       <p class="tool-desc">
-        Coordinates accept plain numbers or tilde offsets. Tick <strong>relative</strong>
-        on a corner and type just the offset: <code>-1</code> becomes <code>~-1</code>,
-        and an empty box becomes <code>~</code>.
+        Coordinates go in one box, so you can paste a set straight out of the game
+        or off a line in your notes. <code>-394.74 66.00 -300.93</code>,
+        <code>607, 62, 1238</code> and <code>Market: -337 64 -318</code> all read
+        correctly, and decimals get rounded down to the block they sit in. Tick
+        <strong>relative</strong> to turn the numbers into tilde offsets.
       </p>
       <p class="tool-desc">
         Region tools show you the size and block count, and warn you before you hit
@@ -92,6 +107,7 @@
   Not affiliated with Mojang or Microsoft.
 </footer>
 
+<script src="assets/js/icons.js"></script>
 <script src="assets/js/data.js"></script>
 <script src="assets/js/common.js"></script>
 </body>
