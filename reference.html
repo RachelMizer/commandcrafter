@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference — CommandCrafter</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html">Command<span>Crafter</span></a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="build.html">Build</a>
+      <a href="npc.html">NPCs</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+    <span class="edition-badge">Bedrock Edition</span>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Reference</h1>
+  <p class="page-intro">
+    Bedrock syntax only. Java Edition commands differ in ways that look small and
+    fail silently, so anything copied from a Java tutorial usually needs rewriting.
+  </p>
+
+  <!-- ---------------- coordinates ---------------- -->
+  <section class="ref-section">
+    <h2>Coordinates</h2>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><th>Axis</th><th>Positive</th><th>Negative</th></tr>
+        <tr><td>X</td><td>East</td><td>West</td></tr>
+        <tr><td>Y</td><td>Up</td><td>Down</td></tr>
+        <tr><td>Z</td><td>South</td><td>North</td></tr>
+      </table>
+    </div>
+
+    <h3>Tilde: relative to you</h3>
+    <p>A tilde means "measured from where I am standing".</p>
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><td>~</td><td>Your position on that axis</td></tr>
+        <tr><td>~1</td><td>One block further along</td></tr>
+        <tr><td>~-1</td><td>One block back — the block below you, on Y</td></tr>
+        <tr><td>~ ~-1 ~</td><td>The block you are standing on</td></tr>
+      </table>
+    </div>
+
+    <h3>Caret: relative to where you look</h3>
+    <p>
+      <code>^left ^up ^forward</code> — rotates with your view rather than the compass.
+      <code>^ ^ ^3</code> is three blocks in front of your face whichever way you turn.
+    </p>
+  </section>
+
+  <!-- ---------------- fill ---------------- -->
+  <section class="ref-section">
+    <h2>/fill</h2>
+
+    <pre class="syntax">/fill &lt;x1 y1 z1&gt; &lt;x2 y2 z2&gt; &lt;block&gt; [data] [mode] [replaceBlock] [replaceData]</pre>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><th>Mode</th><th>What it does</th></tr>
+        <tr><td>replace</td><td>Solid fill. The default when no mode is given.</td></tr>
+        <tr><td>outline</td><td>Walls, floor and ceiling only. Leaves the inside alone.</td></tr>
+        <tr><td>hollow</td><td>Same shell as outline, but clears the inside to air.</td></tr>
+        <tr><td>destroy</td><td>Breaks the old blocks properly so they drop as items.</td></tr>
+        <tr><td>keep</td><td>Only fills air. Nothing already placed gets touched.</td></tr>
+      </table>
+    </div>
+
+    <h3>Common shapes</h3>
+    <pre class="syntax">/fill 607 62 1238 619 62 1247 grass_block
+/fill ~ ~ ~ ~10 ~5 ~10 stone_bricks hollow
+/fill ~-1 ~-1 ~ ~-1 ~-33 ~ stone_bricks     (a tall thin column)
+/fill 978 71 927 961 70 938 air             (clear it out)</pre>
+
+    <h3>Replacing one block type</h3>
+    <p>
+      The data value in front of <code>replace</code> is positional — the command
+      will not parse without it. If the block only comes in one variety, that number
+      is <code>0</code>.
+    </p>
+    <pre class="syntax">/fill &lt;x1 y1 z1&gt; &lt;x2 y2 z2&gt; stone 0 replace cobblestone 0
+/fill 105 63 114 49 70 189 air 0 replace tall_grass</pre>
+    <p>
+      Newer versions accept block states instead, and they read better than
+      remembering which number means "mossy":
+    </p>
+    <pre class="syntax">/fill ~ ~ ~ ~10 ~4 ~10 stone_brick["stone_brick_type"="mossy"]</pre>
+
+    <p class="msg warn">
+      <strong>Size limit.</strong> /fill and /clone both stop at 32,768 blocks
+      (32 × 32 × 32). Bigger jobs have to be split — stepping the Y range a few
+      layers at a time is usually the least confusing way.
+    </p>
+  </section>
+
+  <!-- ---------------- clone ---------------- -->
+  <section class="ref-section">
+    <h2>/clone</h2>
+
+    <pre class="syntax">/clone &lt;x1 y1 z1&gt; &lt;x2 y2 z2&gt; &lt;destination&gt; [maskMode] [cloneMode] [block] [data]</pre>
+
+    <p>
+      The destination is the <strong>lowest north-west corner</strong> of where the
+      copy will sit — smallest X, smallest Y, smallest Z. Getting this wrong is the
+      usual reason a build lands somewhere unexpected.
+    </p>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><th>Mask mode</th><th>What it does</th></tr>
+        <tr><td>replace</td><td>Copies everything, air included. Default.</td></tr>
+        <tr><td>masked</td><td>Skips air, so the copy drops onto existing terrain.</td></tr>
+        <tr><td>filtered</td><td>Copies one named block type and nothing else.</td></tr>
+      </table>
+    </div>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><th>Clone mode</th><th>What it does</th></tr>
+        <tr><td>normal</td><td>Leaves the original where it is. Default.</td></tr>
+        <tr><td>move</td><td>Deletes the original, leaving air. The building moves.</td></tr>
+        <tr><td>force</td><td>Allows the source and destination to overlap.</td></tr>
+      </table>
+    </div>
+
+    <pre class="syntax">/clone 100 64 100 110 74 110 200 64 200
+/clone 100 64 100 110 74 110 200 64 200 masked
+/clone 100 64 100 110 74 110 200 64 200 replace move</pre>
+  </section>
+
+  <!-- ---------------- selectors ---------------- -->
+  <section class="ref-section">
+    <h2>Selectors</h2>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><th>Selector</th><th>Who it means</th></tr>
+        <tr><td>@p</td><td>Nearest player</td></tr>
+        <tr><td>@a</td><td>All players</td></tr>
+        <tr><td>@e</td><td>All entities — players, mobs, items, frames, everything</td></tr>
+        <tr><td>@s</td><td>Whoever is running the command</td></tr>
+        <tr><td>@r</td><td>A random player</td></tr>
+        <tr><td>@initiator</td><td>The player who clicked the NPC dialogue button</td></tr>
+      </table>
+    </div>
+
+    <h3>Arguments</h3>
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><td>type=cow</td><td>Only cows. <code>type=!player</code> means everything but players.</td></tr>
+        <tr><td>tag=vip</td><td>Has that tag. <code>tag=!vip</code> for those without it.</td></tr>
+        <tr><td>r=20 / rm=5</td><td>Maximum and minimum distance</td></tr>
+        <tr><td>c=1</td><td>Limit to this many, nearest first</td></tr>
+        <tr><td>name="Mac"</td><td>Matches the entity's name</td></tr>
+        <tr><td>x= y= z= dx= dy= dz=</td><td>A box, starting at x/y/z and running dx/dy/dz blocks</td></tr>
+        <tr><td>scores={Coins=10..}</td><td>Score is 10 or more</td></tr>
+        <tr><td>hasitem={item=coal,quantity=1..}</td><td>Carrying at least one coal</td></tr>
+      </table>
+    </div>
+
+    <p class="msg warn">
+      <strong>dx/dy/dz are sizes, not the far corner.</strong>
+      <code>x=100,dx=10</code> covers X 100 to 110. Putting the second corner's
+      coordinate in there selects a region far bigger — or entirely elsewhere —
+      than you meant.
+    </p>
+
+    <h3>Ranges</h3>
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><td>10..</td><td>10 or more</td></tr>
+        <tr><td>..9</td><td>9 or less</td></tr>
+        <tr><td>5..10</td><td>Between 5 and 10</td></tr>
+        <tr><td>12</td><td>Exactly 12 — rarely what you want for a price check</td></tr>
+      </table>
+    </div>
+    <p>
+      For a price of 10, the two branches are <code>Coins=..9</code> and
+      <code>Coins=10..</code>. An exact <code>Coins=10</code> means anyone with 11
+      coins can't buy it.
+    </p>
+  </section>
+
+  <!-- ---------------- NPC ---------------- -->
+  <section class="ref-section">
+    <h2>NPCs and dialogue</h2>
+
+    <h3>Making one</h3>
+    <p>
+      Get an NPC spawn egg from the creative menu, or with
+      <code>/give @p spawn_egg 1 51</code>. Place it, then right-click to open the
+      NPC editor and set its name and dialogue. Left-click removes it.
+    </p>
+    <p>Tag it so commands can find it — stand looking at the NPC and run:</p>
+    <pre class="syntax">/tag @e[type=npc,c=1] add mac</pre>
+
+    <h3>Moving between scenes</h3>
+    <pre class="syntax">/dialogue open @e[tag=mac] @initiator
+/dialogue open @e[tag=mac] @initiator macbuy</pre>
+
+    <h3>Ordering inside a dialogue button</h3>
+    <p>
+      Every command on the button runs top to bottom against a selector that is
+      re-evaluated each time. Anything that changes whether the player still matches
+      has to go <strong>last</strong>:
+    </p>
+    <ul>
+      <li>Charging coins before giving the item means the item never arrives.</li>
+      <li>Clearing the item before paying means the payment never arrives.</li>
+      <li>Removing the tag before the rewards means the rewards never arrive.</li>
+    </ul>
+
+    <h3>Sounds</h3>
+    <pre class="syntax">/playsound &lt;sound&gt; &lt;player&gt; [x y z] [volume] [pitch] [minVolume]</pre>
+    <p>
+      Bedrock uses its own sound IDs — <code>random.orb</code>,
+      <code>mob.villager.haggle</code>, <code>mob.cow.say</code>. The Java-style
+      <code>entity.villager.trade</code> names do not exist here, and Bedrock has no
+      sound-category argument, so a Java command like
+      <code>playsound minecraft:entity.cow.ambient master @s</code> fails twice over.
+    </p>
+
+    <h3>Titles</h3>
+    <pre class="syntax">/title &lt;player&gt; actionbar &lt;text&gt;
+/title &lt;player&gt; title &lt;text&gt;
+/title &lt;player&gt; subtitle &lt;text&gt;</pre>
+  </section>
+
+  <!-- ---------------- scoreboard ---------------- -->
+  <section class="ref-section">
+    <h2>Scoreboards</h2>
+
+    <pre class="syntax">/scoreboard objectives add Coins dummy "Coins"
+/scoreboard objectives setdisplay sidebar Coins
+/scoreboard players add @a Coins 0        (registers players without touching scores)
+/scoreboard players add @p Coins 5
+/scoreboard players remove @p Coins 5
+/scoreboard players set @p Coins 0
+/scoreboard players reset @p Coins
+/scoreboard objectives remove Coins</pre>
+
+    <p>
+      <code>add @a Coins 0</code> is the safe way to put everyone on the board: it
+      creates an entry for anyone missing and changes nothing for anyone already
+      there. <code>set</code> would wipe existing balances.
+    </p>
+  </section>
+
+  <!-- ---------------- command blocks ---------------- -->
+  <section class="ref-section">
+    <h2>Command blocks</h2>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><th>Type</th><th>When it runs</th></tr>
+        <tr><td>Impulse</td><td>Once, each time it gets powered</td></tr>
+        <tr><td>Repeat</td><td>Every tick while active</td></tr>
+        <tr><td>Chain</td><td>After the block pointing into it runs</td></tr>
+      </table>
+    </div>
+
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><th>Setting</th><th>Meaning</th></tr>
+        <tr><td>Conditional</td><td>Only runs if the block before it succeeded</td></tr>
+        <tr><td>Unconditional</td><td>Runs regardless</td></tr>
+        <tr><td>Always Active</td><td>No redstone needed</td></tr>
+        <tr><td>Needs Redstone</td><td>Waits for a signal</td></tr>
+      </table>
+    </div>
+
+    <p>
+      A chain fires in the direction the block faces, so the arrow on each block has
+      to point at the next one. A typical trigger is Impulse + Needs Redstone at the
+      front, followed by Chain + Unconditional + Always Active for the rest.
+    </p>
+
+    <h3>Firing a chain from a dialogue button</h3>
+    <p>
+      Dialogue buttons can't summon at a player's position, so they place a redstone
+      block instead and let command blocks take over. The last block in the chain
+      clears the redstone so the trigger can be used again.
+    </p>
+    <pre class="syntax">/setblock -293 57 -320 redstone_block     (button fires it)
+/setblock -293 57 -320 air                (last chain block resets it)</pre>
+
+    <h3>/execute</h3>
+    <pre class="syntax">/execute as &lt;target&gt; at @s run &lt;command&gt;
+/execute as @a[tag=buyer] at @s run summon cow ~ ~1 ~</pre>
+    <p>
+      <code>as</code> changes who runs the command, <code>at</code> changes where it
+      runs from. You usually want both — <code>as @a[...] at @s</code> — otherwise
+      <code>~ ~ ~</code> means the command block's position, not the player's.
+    </p>
+  </section>
+
+  <!-- ---------------- colours ---------------- -->
+  <section class="ref-section">
+    <h2>Colour codes</h2>
+    <p>Put these at the front of message text in <code>/title</code> and <code>/say</code>.</p>
+    <div class="table-scroll">
+      <table class="ref">
+        <tr><td>§a</td><td>Green — conventional for success</td></tr>
+        <tr><td>§c</td><td>Red — conventional for failure</td></tr>
+        <tr><td>§e</td><td>Yellow</td></tr>
+        <tr><td>§6</td><td>Gold</td></tr>
+        <tr><td>§b</td><td>Aqua</td></tr>
+        <tr><td>§9</td><td>Blue</td></tr>
+        <tr><td>§d</td><td>Light purple</td></tr>
+        <tr><td>§f</td><td>White</td></tr>
+        <tr><td>§7</td><td>Grey</td></tr>
+        <tr><td>§l</td><td>Bold</td></tr>
+        <tr><td>§o</td><td>Italic</td></tr>
+        <tr><td>§r</td><td>Reset back to plain</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ---------------- gotchas ---------------- -->
+  <section class="ref-section">
+    <h2>Things that quietly go wrong</h2>
+    <ul>
+      <li><strong>/kill @e with no type</strong> kills you as well. Always add a type, or <code>type=!player</code>.</li>
+      <li><strong>dx/dy/dz</strong> are region sizes, not the second corner.</li>
+      <li><strong>Exact scores</strong> like <code>Coins=12</code> exclude anyone with 13.</li>
+      <li><strong>Charging before rewarding</strong> stops the player matching the selector partway down a button.</li>
+      <li><strong>Java sound names</strong> and the <code>master</code> category argument don't exist in Bedrock.</li>
+      <li><strong>Objective and tag names with spaces</strong> break selector syntax. Use underscores.</li>
+      <li><strong>hollow</strong> needs at least 3 blocks on every side to have an inside to clear.</li>
+      <li><strong>Command blocks</strong> need cheats enabled, and on a realm, operator permissions.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  CommandCrafter — Minecraft Bedrock command builder.
+  Not affiliated with Mojang or Microsoft.
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+</body>
+</html>

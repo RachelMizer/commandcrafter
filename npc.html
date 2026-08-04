@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NPC Commands — CommandCrafter</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html">Command<span>Crafter</span></a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="build.html">Build</a>
+      <a href="npc.html">NPCs</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+    <span class="edition-badge">Bedrock Edition</span>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">NPC commands</h1>
+  <p class="page-intro">
+    Dialogue buttons, vendors and the command-block chains behind them. Each
+    generator returns the whole set of commands in the order they need to run —
+    paste the group straight into one dialogue button.
+  </p>
+
+  <!-- ============================ DIALOGUE ============================ -->
+  <section class="tool" id="tool-dialogue">
+    <h2>Open a dialogue scene <span class="cmd-name">/dialogue</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Sends a player into a named scene on a tagged NPC. This is what a
+        "back" or "tell me more" button runs to move between scenes.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="dlg-tag">NPC tag</label>
+          <input type="text" id="dlg-tag" placeholder="mac" autocomplete="off">
+          <span class="hint">The tag on the NPC entity, not its display name.</span>
+        </div>
+        <div class="field grow">
+          <label for="dlg-scene">Scene tag</label>
+          <input type="text" id="dlg-scene" placeholder="macbuy" autocomplete="off">
+          <span class="hint">Leave blank for the NPC's default scene.</span>
+        </div>
+        <div class="field">
+          <label for="dlg-target">Who sees it</label>
+          <select id="dlg-target">
+            <option value="@initiator">@initiator (whoever clicked)</option>
+            <option value="@p">@p (nearest player)</option>
+            <option value="@a">@a (everyone)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="dlg-generate">Generate</button>
+      </div>
+      <div class="output" id="dlg-output"></div>
+    </div>
+  </section>
+
+  <!-- ============================ SELL ============================ -->
+  <section class="tool" id="tool-sell">
+    <h2>Vendor sells to the player <span class="cmd-name">buy button</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        The player spends points and gets items. Produces both branches — the
+        "not enough" message and the successful purchase — with the score ranges
+        worked out so they can't overlap.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="sell-vendor">Vendor name</label>
+          <input type="text" id="sell-vendor" placeholder="Mac" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="sell-score">Currency objective</label>
+          <input type="text" id="sell-score" placeholder="Coins" value="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="sell-cost">Cost</label>
+          <input type="text" id="sell-cost" placeholder="10" style="width:100px">
+        </div>
+        <div class="field grow">
+          <label for="sell-label">What it's called</label>
+          <input type="text" id="sell-label" placeholder="an Iron Sword" autocomplete="off">
+          <span class="hint">Used in the success message.</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field wide">
+          <label for="sell-items">Items to give — one per line, <code>id amount</code></label>
+          <textarea id="sell-items" rows="3" placeholder="iron_sword 1
+cooked_chicken 2"></textarea>
+          <span class="hint">Amount is optional and defaults to 1.</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="sell-ok-msg">Success message</label>
+          <input type="text" id="sell-ok-msg" placeholder="You just bought an Iron Sword!">
+        </div>
+        <div class="field">
+          <label for="sell-ok-color">Colour</label>
+          <select id="sell-ok-color">
+            <option value="§a">§a green</option>
+            <option value="§e">§e yellow</option>
+            <option value="§6">§6 gold</option>
+            <option value="§f">§f white</option>
+            <option value="none">none</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sell-ok-sound">Success sound</label>
+          <input type="text" id="sell-ok-sound" list="sounds-list" value="random.orb" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="sell-fail-msg">Failure message</label>
+          <input type="text" id="sell-fail-msg" placeholder="You need more coins to buy this item.">
+        </div>
+        <div class="field">
+          <label for="sell-fail-color">Colour</label>
+          <select id="sell-fail-color">
+            <option value="§c">§c red</option>
+            <option value="§e">§e yellow</option>
+            <option value="§f">§f white</option>
+            <option value="none">none</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sell-fail-sound">Failure sound</label>
+          <input type="text" id="sell-fail-sound" list="sounds-list" value="mob.villager.haggle" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="sell-generate">Generate</button>
+      </div>
+      <div class="output" id="sell-output"></div>
+    </div>
+  </section>
+
+  <!-- ============================ BUY ============================ -->
+  <section class="tool" id="tool-buy">
+    <h2>Vendor buys from the player <span class="cmd-name">sell button</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        The player hands over items and gets points. Checks the player's
+        inventory with <code>hasitem</code> before taking anything.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="buy-vendor">Vendor name</label>
+          <input type="text" id="buy-vendor" placeholder="Mac" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="buy-score">Currency objective</label>
+          <input type="text" id="buy-score" placeholder="Coins" value="Coins" autocomplete="off">
+        </div>
+        <div class="field grow">
+          <label for="buy-item">Item bought</label>
+          <input type="text" id="buy-item" list="items-list" placeholder="iron_ore" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="buy-qty">Player must have</label>
+          <input type="text" id="buy-qty" value="1" style="width:110px">
+        </div>
+        <div class="field">
+          <label for="buy-take">Take this many</label>
+          <input type="text" id="buy-take" value="1" style="width:110px">
+        </div>
+        <div class="field">
+          <label for="buy-pay">Pay</label>
+          <input type="text" id="buy-pay" placeholder="3" style="width:110px">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="buy-ok-msg">Success message</label>
+          <input type="text" id="buy-ok-msg" placeholder="Mac bought your iron ore.">
+        </div>
+        <div class="field">
+          <label for="buy-ok-color">Colour</label>
+          <select id="buy-ok-color">
+            <option value="§a">§a green</option>
+            <option value="§e">§e yellow</option>
+            <option value="§f">§f white</option>
+            <option value="none">none</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="buy-ok-sound">Success sound</label>
+          <input type="text" id="buy-ok-sound" list="sounds-list" value="random.orb" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="buy-fail-msg">Failure message</label>
+          <input type="text" id="buy-fail-msg" placeholder="You are all out of iron ore to sell.">
+        </div>
+        <div class="field">
+          <label for="buy-fail-color">Colour</label>
+          <select id="buy-fail-color">
+            <option value="§c">§c red</option>
+            <option value="§e">§e yellow</option>
+            <option value="§f">§f white</option>
+            <option value="none">none</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="buy-fail-sound">Failure sound</label>
+          <input type="text" id="buy-fail-sound" list="sounds-list" value="mob.villager.haggle" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="buy-generate">Generate</button>
+      </div>
+      <div class="output" id="buy-output"></div>
+    </div>
+  </section>
+
+  <!-- ============================ SCOREBOARD ============================ -->
+  <section class="tool" id="tool-scoreboard">
+    <h2>Set up a scoreboard <span class="cmd-name">/scoreboard</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Every currency, quest flag and purchase counter needs an objective before
+        any vendor button will work.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="sc-name">Objective name</label>
+          <input type="text" id="sc-name" placeholder="Coins" autocomplete="off">
+          <span class="hint">No spaces — this goes inside selectors.</span>
+        </div>
+        <div class="field grow">
+          <label for="sc-display">Display name</label>
+          <input type="text" id="sc-display" placeholder="Coins">
+          <span class="hint">Shown on screen; spaces are fine here.</span>
+        </div>
+        <div class="field">
+          <label for="sc-slot">Show it</label>
+          <select id="sc-slot">
+            <option value="sidebar">sidebar</option>
+            <option value="list">list (pause menu)</option>
+            <option value="belowname">belowname</option>
+            <option value="none">don't display</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sc-start">Starting score</label>
+          <input type="text" id="sc-start" value="0" style="width:110px">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="sc-generate">Generate</button>
+      </div>
+      <div class="output" id="sc-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= SUMMON SHOP ======================= -->
+  <section class="tool" id="tool-summon-shop">
+    <h2>Livestock / summon vendor <span class="cmd-name">redstone chain</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        A dialogue button can't summon a mob on its own, so it sets a flag score
+        and powers a redstone block. Command blocks in the world do the summoning
+        and reset themselves afterwards.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="ss-flag">Flag objective</label>
+          <input type="text" id="ss-flag" placeholder="buyCow_aaron" autocomplete="off">
+          <span class="hint">One per vendor per animal, so shops don't cross-fire.</span>
+        </div>
+        <div class="field">
+          <label for="ss-score">Currency objective</label>
+          <input type="text" id="ss-score" value="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ss-cost">Cost</label>
+          <input type="text" id="ss-cost" placeholder="20" style="width:100px">
+        </div>
+        <div class="field grow">
+          <label for="ss-entity">Entity to summon</label>
+          <input type="text" id="ss-entity" list="entities-list" placeholder="cow" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Spawn point</span>
+            <label class="rel-toggle"><input type="checkbox" id="ss-spawn-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="ss-spawn-x">X</label><input type="text" id="ss-spawn-x"></div>
+            <div class="field"><label for="ss-spawn-y">Y</label><input type="text" id="ss-spawn-y"></div>
+            <div class="field"><label for="ss-spawn-z">Z</label><input type="text" id="ss-spawn-z"></div>
+          </div>
+        </div>
+
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Redstone trigger block</span>
+            <label class="rel-toggle"><input type="checkbox" id="ss-redstone-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="ss-redstone-x">X</label><input type="text" id="ss-redstone-x"></div>
+            <div class="field"><label for="ss-redstone-y">Y</label><input type="text" id="ss-redstone-y"></div>
+            <div class="field"><label for="ss-redstone-z">Z</label><input type="text" id="ss-redstone-z"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="ss-extra-item">Item to hand over too</label>
+          <input type="text" id="ss-extra-item" list="items-list" placeholder="lead" autocomplete="off">
+        </div>
+        <div class="field grow">
+          <label for="ss-ok-msg">Success message</label>
+          <input type="text" id="ss-ok-msg" placeholder="You've bought a cow!">
+        </div>
+        <label class="check" for="ss-check-cost">
+          <input type="checkbox" id="ss-check-cost" checked>
+          Check the player can afford it
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="ss-generate">Generate</button>
+      </div>
+      <div class="output" id="ss-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= TAG CHAIN ======================= -->
+  <section class="tool" id="tool-tag-chain">
+    <h2>Tag-driven purchase chain <span class="cmd-name">command blocks</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        The other way round: the dialogue button just tags the player, and a pair
+        of command-block chains sort out success and failure. Easier to debug than
+        putting everything on the button.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="tc-tag">Tag set by the button</label>
+          <input type="text" id="tc-tag" placeholder="cowbuyer" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="tc-score">Currency objective</label>
+          <input type="text" id="tc-score" value="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="tc-cost">Cost</label>
+          <input type="text" id="tc-cost" placeholder="20" style="width:100px">
+        </div>
+        <div class="field">
+          <label for="tc-sound">Success sound</label>
+          <input type="text" id="tc-sound" list="sounds-list" value="random.orb" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="tc-entity">Summon on success</label>
+          <input type="text" id="tc-entity" list="entities-list" placeholder="cow" autocomplete="off">
+        </div>
+        <div class="field grow">
+          <label for="tc-item">Give on success</label>
+          <input type="text" id="tc-item" list="items-list" placeholder="lead" autocomplete="off">
+        </div>
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Redstone block to reset</span>
+            <label class="rel-toggle"><input type="checkbox" id="tc-reset-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="tc-reset-x">X</label><input type="text" id="tc-reset-x"></div>
+            <div class="field"><label for="tc-reset-y">Y</label><input type="text" id="tc-reset-y"></div>
+            <div class="field"><label for="tc-reset-z">Z</label><input type="text" id="tc-reset-z"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="tc-ok-msg">Success message</label>
+          <input type="text" id="tc-ok-msg" placeholder="You bought a cow!">
+        </div>
+        <div class="field grow">
+          <label for="tc-fail-msg">Failure message</label>
+          <input type="text" id="tc-fail-msg" placeholder="You don't have enough coins!">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="tc-generate">Generate</button>
+      </div>
+      <div class="output" id="tc-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= ACCESS LOCK ======================= -->
+  <section class="tool" id="tool-access-lock">
+    <h2>Lock an area to tagged players <span class="cmd-name">access control</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Teleports anyone without the access tag back out, and warns them on the way
+        in. Good for player houses, shops and quest areas.
+      </p>
+
+      <div class="field-row">
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Centre of the protected area</span>
+            <label class="rel-toggle"><input type="checkbox" id="al-area-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="al-area-x">X</label><input type="text" id="al-area-x"></div>
+            <div class="field"><label for="al-area-y">Y</label><input type="text" id="al-area-y"></div>
+            <div class="field"><label for="al-area-z">Z</label><input type="text" id="al-area-z"></div>
+          </div>
+        </div>
+
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Send trespassers to</span>
+            <label class="rel-toggle"><input type="checkbox" id="al-send-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="al-send-x">X</label><input type="text" id="al-send-x"></div>
+            <div class="field"><label for="al-send-y">Y</label><input type="text" id="al-send-y"></div>
+            <div class="field"><label for="al-send-z">Z</label><input type="text" id="al-send-z"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="al-tag">Access tag</label>
+          <input type="text" id="al-tag" placeholder="avaAccess" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="al-radius">Lock radius</label>
+          <input type="text" id="al-radius" value="20" style="width:110px">
+        </div>
+        <div class="field">
+          <label for="al-warn-radius">Warning radius</label>
+          <input type="text" id="al-warn-radius" placeholder="40" style="width:130px">
+        </div>
+        <div class="field grow">
+          <label for="al-msg">Warning message</label>
+          <input type="text" id="al-msg" placeholder="You don't have access to this property.">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="al-generate">Generate</button>
+      </div>
+      <div class="output" id="al-output"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  CommandCrafter — Minecraft Bedrock command builder.
+  Not affiliated with Mojang or Microsoft.
+</footer>
+
+<datalist id="items-list"></datalist>
+<datalist id="entities-list"></datalist>
+<datalist id="sounds-list"></datalist>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/npc.js"></script>
+</body>
+</html>

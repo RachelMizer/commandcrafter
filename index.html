@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CommandCrafter — Minecraft Bedrock command builder</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html">Command<span>Crafter</span></a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="build.html">Build</a>
+      <a href="npc.html">NPCs</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+    <span class="edition-badge">Bedrock Edition</span>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Build the command, copy the command</h1>
+  <p class="page-intro">
+    Fill in a form, get a working Minecraft Bedrock command with a copy button on it.
+    No more counting coordinates by hand or remembering which argument the data
+    value goes before.
+  </p>
+
+  <div class="card-grid">
+    <a class="card" href="build.html">
+      <h3>Build commands →</h3>
+      <p>Everything for putting blocks in the world.</p>
+      <ul>
+        <li>/fill — solid, outline, hollow, replace-one-block</li>
+        <li>/clone — copy or move a whole building</li>
+        <li>/setblock — single blocks and redstone triggers</li>
+        <li>/kill — clear entities out of a region</li>
+      </ul>
+    </a>
+
+    <a class="card" href="npc.html">
+      <h3>NPC commands →</h3>
+      <p>Dialogue buttons, shops and the logic behind them.</p>
+      <ul>
+        <li>Vendors that sell to and buy from players</li>
+        <li>/dialogue scene navigation</li>
+        <li>Scoreboard currencies and quest flags</li>
+        <li>Redstone summon chains and area locks</li>
+      </ul>
+    </a>
+
+    <a class="card" href="reference.html">
+      <h3>Reference →</h3>
+      <p>The syntax, without digging through a wiki.</p>
+      <ul>
+        <li>Coordinates and tilde offsets</li>
+        <li>Selector arguments and score ranges</li>
+        <li>Command block types and settings</li>
+        <li>Colour codes and common gotchas</li>
+      </ul>
+    </a>
+  </div>
+
+  <section class="tool">
+    <h2>How it works</h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Every generator produces the full set of commands in the order they have to
+        run, with a copy button on each line and a <strong>Copy all</strong> at the
+        bottom. Where ordering matters — charging a player before handing over the
+        goods, say — the generator puts the commands in the order that actually works
+        and explains why.
+      </p>
+      <p class="tool-desc">
+        Coordinates accept plain numbers or tilde offsets. Tick <strong>relative</strong>
+        on a corner and type just the offset: <code>-1</code> becomes <code>~-1</code>,
+        and an empty box becomes <code>~</code>.
+      </p>
+      <p class="tool-desc">
+        Region tools show you the size and block count, and warn you before you hit
+        Bedrock's 32,768 block ceiling on <code>/fill</code> and <code>/clone</code>.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  CommandCrafter — Minecraft Bedrock command builder.
+  Not affiliated with Mojang or Microsoft.
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+</body>
+</html>

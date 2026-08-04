@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build Commands — CommandCrafter</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html">Command<span>Crafter</span></a>
+    <nav class="site-nav">
+      <a href="index.html">Home</a>
+      <a href="build.html">Build</a>
+      <a href="npc.html">NPCs</a>
+      <a href="reference.html">Reference</a>
+    </nav>
+    <span class="edition-badge">Bedrock Edition</span>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Build commands</h1>
+  <p class="page-intro">
+    Filling, cloning and clearing. Coordinates take absolute numbers
+    (<code>607</code>) or tilde offsets — tick <strong>relative</strong> on a corner
+    and type just the offset, so <code>-1</code> becomes <code>~-1</code>.
+  </p>
+
+  <!-- ============================ FILL ============================ -->
+  <section class="tool" id="tool-fill">
+    <h2>Fill a region <span class="cmd-name">/fill</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Fills every block between two corners. Order doesn't matter — either corner
+        can be first.
+      </p>
+
+      <div class="preset-row">
+        <span class="preset-label">Presets</span>
+        <button type="button" class="small" data-fill-preset="air">Clear to air</button>
+        <button type="button" class="small" data-fill-preset="grass">Remove tall grass</button>
+        <button type="button" class="small" data-fill-preset="water">Drain water</button>
+        <button type="button" class="small" data-fill-preset="outline">Outline</button>
+        <button type="button" class="small" data-fill-preset="hollow">Hollow</button>
+      </div>
+
+      <div class="field-row">
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Corner 1</span>
+            <label class="rel-toggle"><input type="checkbox" id="fill-from-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="fill-from-x">X</label><input type="text" id="fill-from-x" placeholder="607"></div>
+            <div class="field"><label for="fill-from-y">Y</label><input type="text" id="fill-from-y" placeholder="62"></div>
+            <div class="field"><label for="fill-from-z">Z</label><input type="text" id="fill-from-z" placeholder="1238"></div>
+          </div>
+        </div>
+
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Corner 2</span>
+            <label class="rel-toggle"><input type="checkbox" id="fill-to-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="fill-to-x">X</label><input type="text" id="fill-to-x" placeholder="619"></div>
+            <div class="field"><label for="fill-to-y">Y</label><input type="text" id="fill-to-y" placeholder="62"></div>
+            <div class="field"><label for="fill-to-z">Z</label><input type="text" id="fill-to-z" placeholder="1247"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="fill-block">Block</label>
+          <input type="text" id="fill-block" list="blocks-list" placeholder="stone_bricks" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fill-variant">Variant</label>
+          <select id="fill-variant">
+            <option value="none">None</option>
+            <option value="data">Data value</option>
+            <option value="states">Block states</option>
+          </select>
+        </div>
+        <div class="field" id="fill-data-field" style="display:none">
+          <label for="fill-data">Data value</label>
+          <input type="text" id="fill-data" placeholder="0" style="width:90px">
+        </div>
+        <div class="field grow" id="fill-states-field" style="display:none">
+          <label for="fill-states">Block states</label>
+          <input type="text" id="fill-states" placeholder='["stone_brick_type"="mossy"]'>
+        </div>
+        <div class="field">
+          <label for="fill-mode">Mode</label>
+          <select id="fill-mode">
+            <option value="replace">replace (solid)</option>
+            <option value="outline">outline (walls only)</option>
+            <option value="hollow">hollow (walls + air inside)</option>
+            <option value="destroy">destroy (drops blocks)</option>
+            <option value="keep">keep (air only)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label class="check" for="fill-filter-enable">
+          <input type="checkbox" id="fill-filter-enable">
+          Only replace one kind of block
+        </label>
+      </div>
+
+      <div class="field-row" id="fill-filter-fields" style="display:none">
+        <div class="field grow">
+          <label for="fill-filter-block">Block to replace</label>
+          <input type="text" id="fill-filter-block" list="blocks-list" placeholder="tall_grass" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="fill-filter-data">Its data value</label>
+          <input type="text" id="fill-filter-data" placeholder="optional" style="width:120px">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="fill-generate">Generate</button>
+      </div>
+
+      <div class="output" id="fill-output"></div>
+    </div>
+  </section>
+
+  <!-- ============================ CLONE ============================ -->
+  <section class="tool" id="tool-clone">
+    <h2>Copy a building <span class="cmd-name">/clone</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Copies everything between the two source corners to a new spot.
+      </p>
+
+      <div class="field-row">
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Source corner 1</span>
+            <label class="rel-toggle"><input type="checkbox" id="clone-from-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="clone-from-x">X</label><input type="text" id="clone-from-x"></div>
+            <div class="field"><label for="clone-from-y">Y</label><input type="text" id="clone-from-y"></div>
+            <div class="field"><label for="clone-from-z">Z</label><input type="text" id="clone-from-z"></div>
+          </div>
+        </div>
+
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Source corner 2</span>
+            <label class="rel-toggle"><input type="checkbox" id="clone-to-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="clone-to-x">X</label><input type="text" id="clone-to-x"></div>
+            <div class="field"><label for="clone-to-y">Y</label><input type="text" id="clone-to-y"></div>
+            <div class="field"><label for="clone-to-z">Z</label><input type="text" id="clone-to-z"></div>
+          </div>
+        </div>
+
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Paste at (lowest NW corner)</span>
+            <label class="rel-toggle"><input type="checkbox" id="clone-dest-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="clone-dest-x">X</label><input type="text" id="clone-dest-x"></div>
+            <div class="field"><label for="clone-dest-y">Y</label><input type="text" id="clone-dest-y"></div>
+            <div class="field"><label for="clone-dest-z">Z</label><input type="text" id="clone-dest-z"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="clone-mask">What to copy</label>
+          <select id="clone-mask">
+            <option value="replace">replace — everything, air included</option>
+            <option value="masked">masked — skip air, keep what's there</option>
+            <option value="filtered">filtered — one block type only</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="clone-mode">Source afterwards</label>
+          <select id="clone-mode">
+            <option value="normal">normal — leave the original</option>
+            <option value="move">move — delete the original</option>
+            <option value="force">force — allow overlapping regions</option>
+          </select>
+        </div>
+        <div class="field grow" id="clone-filter-fields" style="display:none">
+          <label for="clone-filter-block">Block to copy</label>
+          <input type="text" id="clone-filter-block" list="blocks-list" placeholder="stone_bricks" autocomplete="off">
+        </div>
+        <div class="field" id="clone-filter-data-field">
+          <label for="clone-filter-data">Data</label>
+          <input type="text" id="clone-filter-data" placeholder="optional" style="width:110px">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="clone-generate">Generate</button>
+      </div>
+
+      <div class="output" id="clone-output"></div>
+    </div>
+  </section>
+
+  <!-- ============================ SETBLOCK ============================ -->
+  <section class="tool" id="tool-setblock">
+    <h2>Place one block <span class="cmd-name">/setblock</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        A single block. Handy for redstone triggers — swap a block between
+        <code>redstone_block</code> and <code>air</code> to fire a command chain.
+      </p>
+
+      <div class="field-row">
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Position</span>
+            <label class="rel-toggle"><input type="checkbox" id="sb-at-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="sb-at-x">X</label><input type="text" id="sb-at-x"></div>
+            <div class="field"><label for="sb-at-y">Y</label><input type="text" id="sb-at-y"></div>
+            <div class="field"><label for="sb-at-z">Z</label><input type="text" id="sb-at-z"></div>
+          </div>
+        </div>
+
+        <div class="field grow">
+          <label for="sb-block">Block</label>
+          <input type="text" id="sb-block" list="blocks-list" placeholder="redstone_block" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="sb-variant">Variant</label>
+          <select id="sb-variant">
+            <option value="none">None</option>
+            <option value="data">Data value</option>
+            <option value="states">Block states</option>
+          </select>
+        </div>
+        <div class="field" id="sb-data-field" style="display:none">
+          <label for="sb-data">Data</label>
+          <input type="text" id="sb-data" placeholder="0" style="width:90px">
+        </div>
+        <div class="field grow" id="sb-states-field" style="display:none">
+          <label for="sb-states">Block states</label>
+          <input type="text" id="sb-states" placeholder='["direction"=0]'>
+        </div>
+        <div class="field">
+          <label for="sb-mode">Mode</label>
+          <select id="sb-mode">
+            <option value="replace">replace</option>
+            <option value="destroy">destroy</option>
+            <option value="keep">keep</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="sb-generate">Generate</button>
+      </div>
+
+      <div class="output" id="sb-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= CLEAR ENTITIES ======================= -->
+  <section class="tool" id="tool-clear-entities">
+    <h2>Clear entities from an area <span class="cmd-name">/kill</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Give it two corners and it works out the <code>dx/dy/dz</code> box for you.
+        Those are the <em>size</em> of the region, not the far corner's coordinates —
+        putting the second corner in there is the usual reason a clear-out misses.
+      </p>
+
+      <div class="field-row">
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Corner 1</span>
+            <label class="rel-toggle"><input type="checkbox" id="ce-from-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="ce-from-x">X</label><input type="text" id="ce-from-x"></div>
+            <div class="field"><label for="ce-from-y">Y</label><input type="text" id="ce-from-y"></div>
+            <div class="field"><label for="ce-from-z">Z</label><input type="text" id="ce-from-z"></div>
+          </div>
+        </div>
+
+        <div class="coord-group">
+          <div class="field-label">
+            <span>Corner 2</span>
+            <label class="rel-toggle"><input type="checkbox" id="ce-to-rel"> relative (~)</label>
+          </div>
+          <div class="coord-inputs">
+            <div class="field"><label for="ce-to-x">X</label><input type="text" id="ce-to-x"></div>
+            <div class="field"><label for="ce-to-y">Y</label><input type="text" id="ce-to-y"></div>
+            <div class="field"><label for="ce-to-z">Z</label><input type="text" id="ce-to-z"></div>
+          </div>
+        </div>
+
+        <div class="field grow">
+          <label for="ce-type">Entity type</label>
+          <input type="text" id="ce-type" list="entities-list" placeholder="zombie" autocomplete="off">
+          <span class="hint">Leave blank to clear everything except players.</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="ce-generate">Generate</button>
+      </div>
+
+      <div class="output" id="ce-output"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  CommandCrafter — Minecraft Bedrock command builder.
+  Not affiliated with Mojang or Microsoft.
+</footer>
+
+<datalist id="blocks-list"></datalist>
+<datalist id="entities-list"></datalist>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/build.js"></script>
+</body>
+</html>
