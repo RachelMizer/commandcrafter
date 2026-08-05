@@ -106,10 +106,17 @@
       </div>
 
       <div class="field-row">
-        <label class="check" for="fill-filter-enable">
-          <input type="checkbox" id="fill-filter-enable">
-          Only replace one kind of block
-        </label>
+        <div class="field wide">
+          <label class="check" for="fill-filter-enable">
+            <input type="checkbox" id="fill-filter-enable">
+            Only replace one kind of block
+          </label>
+          <span class="hint">
+            Bedrock only allows this with <strong>replace</strong> mode, so ticking it
+            switches the mode back — and picking outline, hollow, destroy or keep
+            unticks it again.
+          </span>
+        </div>
       </div>
 
       <div class="field-row" id="fill-filter-fields" style="display:none">

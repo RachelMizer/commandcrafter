@@ -127,12 +127,22 @@ function fillPreset(kind) {
   generateFill();
 }
 
+/* Bedrock only accepts a replace-filter alongside `replace` mode -- there is no
+   "hollow, but only where there is cobblestone". Rather than greying the mode
+   dropdown out, the two settings give way to whichever one was touched last, so
+   neither ever becomes unreachable. */
+
 function syncFillFilter() {
   var on = isChecked('fill-filter-enable');
   $('fill-filter-fields').style.display = on ? '' : 'none';
-  var mode = $('fill-mode');
-  mode.disabled = on;
-  if (on) mode.value = 'replace';
+  if (on && val('fill-mode') !== 'replace') $('fill-mode').value = 'replace';
+}
+
+function syncFillMode() {
+  if (val('fill-mode') !== 'replace' && isChecked('fill-filter-enable')) {
+    $('fill-filter-enable').checked = false;
+    syncFillFilter();
+  }
 }
 
 function syncFillVariant() {
@@ -314,6 +324,7 @@ function generateClearEntities() {
 document.addEventListener('DOMContentLoaded', function () {
   on('fill-generate', 'click', generateFill);
   on('fill-filter-enable', 'change', syncFillFilter);
+  on('fill-mode', 'change', syncFillMode);
   on('fill-variant', 'change', syncFillVariant);
   syncFillFilter();
   syncFillVariant();
