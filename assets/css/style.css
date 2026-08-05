@@ -305,6 +305,21 @@ button.primary:hover { background: var(--green); border-color: var(--green); }
 
 button.small { padding: 4px 10px; font-size: 12px; }
 
+a.linkbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--green-dk);
+  background: var(--green-dk);
+  color: #fff;
+  text-decoration: none;
+}
+a.linkbtn:hover { background: var(--green); border-color: var(--green); }
+
 .preset-row {
   display: flex;
   gap: 8px;

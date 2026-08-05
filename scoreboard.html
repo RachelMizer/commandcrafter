@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoreboards — CommandCrafter</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a class="brand" href="index.html"><span data-icon="cube"></span>Command<span>Crafter</span></a>
+    <nav class="site-nav">
+      <a href="index.html"><span data-icon="home"></span>Home</a>
+      <a href="build.html"><span data-icon="cube"></span>Build</a>
+      <a href="npc.html"><span data-icon="npc"></span>NPCs</a>
+      <a href="scoreboard.html"><span data-icon="chart"></span>Scoreboards</a>
+      <a href="notes.html"><span data-icon="note"></span>Notes</a>
+      <a href="reference.html"><span data-icon="book"></span>Reference</a>
+    </nav>
+    <span class="edition-badge">Bedrock Edition</span>
+  </div>
+</header>
+
+<main>
+  <h1 class="page-title">Scoreboards</h1>
+  <p class="page-intro">
+    Every currency, quest flag, timer and purchase counter runs on a scoreboard.
+    Bedrock has exactly one criteria — <code>dummy</code> — so scores only ever
+    change when a command changes them. That makes them reliable, and it means
+    most of the work is in editing them rather than setting them up.
+  </p>
+
+  <!-- ======================= CREATE ======================= -->
+  <section class="tool" id="tool-create">
+    <h2><span data-icon="plus"></span>Create an objective <span class="cmd-name">objectives add</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        The first step for anything else on this page. Nothing can hold a score
+        until its objective exists.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="cr-name">Objective name</label>
+          <input type="text" id="cr-name" placeholder="Coins" autocomplete="off">
+          <span class="hint">No spaces. Case matters — Coins and coins are different.</span>
+        </div>
+        <div class="field grow">
+          <label for="cr-display">Display name</label>
+          <input type="text" id="cr-display" placeholder="Coins">
+          <span class="hint">What players see. Spaces are fine here.</span>
+        </div>
+        <div class="field">
+          <label for="cr-slot">Show it</label>
+          <select id="cr-slot">
+            <option value="sidebar">sidebar</option>
+            <option value="list">list (pause menu)</option>
+            <option value="belowname">belowname</option>
+            <option value="none">don't display</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cr-sort">Order</label>
+          <select id="cr-sort">
+            <option value="descending">highest first</option>
+            <option value="ascending">lowest first</option>
+            <option value="">leave default</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field wide">
+          <label class="check" for="cr-register">
+            <input type="checkbox" id="cr-register" checked>
+            Also put every player on the board
+          </label>
+          <span class="hint">
+            Adds 0 to everyone, which registers anyone missing without changing
+            scores that already exist.
+          </span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="cr-generate">Generate</button>
+      </div>
+      <div class="output" id="cr-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= CHANGE ======================= -->
+  <section class="tool" id="tool-change">
+    <h2><span data-icon="pencil"></span>Change a score <span class="cmd-name">players add / remove / set</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Paying out a reward, charging for a purchase, flipping a quest flag.
+      </p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="ch-target">Who</label>
+          <select id="ch-target">
+            <option value="@a">@a — all players</option>
+            <option value="@p">@p — nearest player</option>
+            <option value="@s">@s — whoever runs it</option>
+            <option value="@r">@r — a random player</option>
+            <option value="@initiator">@initiator — NPC button clicker</option>
+            <option value="@e">@e — all entities</option>
+            <option value="custom">a name or fake player…</option>
+          </select>
+        </div>
+        <div class="field grow" id="ch-custom-field" style="display:none">
+          <label for="ch-custom">Name</label>
+          <input type="text" id="ch-custom" placeholder="#globalTimer" autocomplete="off">
+        </div>
+        <div class="field grow">
+          <label for="ch-obj">Objective</label>
+          <input type="text" id="ch-obj" placeholder="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ch-action">Action</label>
+          <select id="ch-action">
+            <option value="add">add</option>
+            <option value="remove">remove</option>
+            <option value="set">set to</option>
+            <option value="reset">reset (take off the board)</option>
+          </select>
+        </div>
+        <div class="field" id="ch-amount-field">
+          <label for="ch-amount">Amount</label>
+          <input type="text" id="ch-amount" placeholder="10" style="width:110px">
+        </div>
+      </div>
+
+      <div class="field-row" id="ch-filter-row">
+        <div class="field wide">
+          <label class="check" for="ch-filter-enable">
+            <input type="checkbox" id="ch-filter-enable">
+            Only players whose score is in a range
+          </label>
+        </div>
+      </div>
+
+      <div class="field-row" id="ch-filter-fields" style="display:none">
+        <div class="field grow">
+          <label for="ch-filter-obj">Filter on objective</label>
+          <input type="text" id="ch-filter-obj" placeholder="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ch-filter-min">At least</label>
+          <input type="text" id="ch-filter-min" placeholder="10" style="width:120px">
+        </div>
+        <div class="field">
+          <label for="ch-filter-max">At most</label>
+          <input type="text" id="ch-filter-max" placeholder="(none)" style="width:120px">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="ch-generate">Generate</button>
+      </div>
+      <div class="output" id="ch-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= CHECK ======================= -->
+  <section class="tool" id="tool-check">
+    <h2><span data-icon="search"></span>Check a score <span class="cmd-name">scores={…}</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Builds the selector that gates a command on somebody's score — the piece
+        every shop, door and quest step is built out of.
+      </p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="ck-target">Who</label>
+          <select id="ck-target">
+            <option value="@a">@a — all players</option>
+            <option value="@p">@p — nearest player</option>
+            <option value="@s">@s — whoever runs it</option>
+            <option value="@initiator">@initiator — NPC button clicker</option>
+          </select>
+        </div>
+        <div class="field grow">
+          <label for="ck-obj">Objective</label>
+          <input type="text" id="ck-obj" placeholder="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ck-min">At least</label>
+          <input type="text" id="ck-min" placeholder="10" style="width:120px">
+        </div>
+        <div class="field">
+          <label for="ck-max">At most</label>
+          <input type="text" id="ck-max" placeholder="(none)" style="width:120px">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field wide">
+          <label for="ck-command">Command to run for everyone who matches</label>
+          <input type="text" id="ck-command" placeholder="give @s diamond 1" autocomplete="off">
+          <span class="hint">Optional. Leave blank for a placeholder.</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="ck-generate">Generate</button>
+      </div>
+      <div class="output" id="ck-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= DISPLAY ======================= -->
+  <section class="tool" id="tool-display">
+    <h2><span data-icon="chart"></span>Show or hide a scoreboard <span class="cmd-name">setdisplay</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Three slots, one objective each. Putting a new objective in a slot
+        replaces whatever was there.
+      </p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="dp-action">Action</label>
+          <select id="dp-action">
+            <option value="show">show an objective</option>
+            <option value="clear">clear the slot</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="dp-slot">Slot</label>
+          <select id="dp-slot">
+            <option value="sidebar">sidebar — right of the screen</option>
+            <option value="list">list — the pause menu</option>
+            <option value="belowname">belowname — under nametags</option>
+          </select>
+        </div>
+        <div class="field grow" id="dp-obj-field">
+          <label for="dp-obj">Objective</label>
+          <input type="text" id="dp-obj" placeholder="Coins" autocomplete="off">
+        </div>
+        <div class="field" id="dp-sort-field">
+          <label for="dp-sort">Order</label>
+          <select id="dp-sort">
+            <option value="descending">highest first</option>
+            <option value="ascending">lowest first</option>
+            <option value="">leave default</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="dp-generate">Generate</button>
+      </div>
+      <div class="output" id="dp-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= OPERATION ======================= -->
+  <section class="tool" id="tool-operation">
+    <h2><span data-icon="link"></span>Score maths <span class="cmd-name">players operation</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Combines two scores — copy one onto another, add them together, take the
+        larger. This is how you total things up, apply interest, or stash a value
+        for later.
+      </p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="op-target">Target</label>
+          <select id="op-target">
+            <option value="@a">@a — all players</option>
+            <option value="@p">@p — nearest player</option>
+            <option value="@s">@s — whoever runs it</option>
+            <option value="@initiator">@initiator — NPC button clicker</option>
+            <option value="custom">a name or fake player…</option>
+          </select>
+        </div>
+        <div class="field grow" id="op-custom-field" style="display:none">
+          <label for="op-custom">Name</label>
+          <input type="text" id="op-custom" placeholder="#bank" autocomplete="off">
+        </div>
+        <div class="field grow">
+          <label for="op-target-obj">Target objective</label>
+          <input type="text" id="op-target-obj" placeholder="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="op-operation">Operation</label>
+          <select id="op-operation">
+            <option value="+=">+= add the source</option>
+            <option value="-=">-= subtract the source</option>
+            <option value="*=">*= multiply by the source</option>
+            <option value="/=">/= divide by the source</option>
+            <option value="%=">%= remainder after dividing</option>
+            <option value="=">= copy the source over</option>
+            <option value="&lt;">&lt; keep whichever is smaller</option>
+            <option value="&gt;">&gt; keep whichever is larger</option>
+            <option value="&gt;&lt;">&gt;&lt; swap the two scores</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row" id="op-filter-row">
+        <div class="field wide">
+          <label class="check" for="op-filter-enable">
+            <input type="checkbox" id="op-filter-enable">
+            Only players whose score is in a range
+          </label>
+        </div>
+      </div>
+
+      <div class="field-row" id="op-filter-fields" style="display:none">
+        <div class="field grow">
+          <label for="op-filter-obj">Filter on objective</label>
+          <input type="text" id="op-filter-obj" placeholder="Coins" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="op-filter-min">At least</label>
+          <input type="text" id="op-filter-min" placeholder="1" style="width:120px">
+        </div>
+        <div class="field">
+          <label for="op-filter-max">At most</label>
+          <input type="text" id="op-filter-max" placeholder="(none)" style="width:120px">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="op-src-target">Source</label>
+          <select id="op-src-target">
+            <option value="custom">a name or fake player…</option>
+            <option value="@s">@s — whoever runs it</option>
+            <option value="@p">@p — nearest player</option>
+            <option value="@initiator">@initiator — NPC button clicker</option>
+          </select>
+        </div>
+        <div class="field grow" id="op-src-custom-field">
+          <label for="op-src-custom">Name</label>
+          <input type="text" id="op-src-custom" placeholder="#price" autocomplete="off">
+        </div>
+        <div class="field grow">
+          <label for="op-source-obj">Source objective</label>
+          <input type="text" id="op-source-obj" placeholder="Constants" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="op-generate">Generate</button>
+      </div>
+      <div class="output" id="op-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= RANDOM ======================= -->
+  <section class="tool" id="tool-random">
+    <h2><span data-icon="egg"></span>Roll a random number <span class="cmd-name">players random</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Puts a random value into a score. Loot tables, random quest targets,
+        a dice roll an NPC reacts to.
+      </p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="rn-target">Who</label>
+          <select id="rn-target">
+            <option value="@a">@a — all players</option>
+            <option value="@p">@p — nearest player</option>
+            <option value="@s">@s — whoever runs it</option>
+            <option value="@initiator">@initiator — NPC button clicker</option>
+            <option value="custom">a name or fake player…</option>
+          </select>
+        </div>
+        <div class="field grow" id="rn-custom-field" style="display:none">
+          <label for="rn-custom">Name</label>
+          <input type="text" id="rn-custom" placeholder="#roll" autocomplete="off">
+        </div>
+        <div class="field grow">
+          <label for="rn-obj">Objective</label>
+          <input type="text" id="rn-obj" placeholder="DiceRoll" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="rn-min">Lowest</label>
+          <input type="text" id="rn-min" value="1" style="width:110px">
+        </div>
+        <div class="field">
+          <label for="rn-max">Highest</label>
+          <input type="text" id="rn-max" value="6" style="width:110px">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="rn-generate">Generate</button>
+      </div>
+      <div class="output" id="rn-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= GLOBAL ======================= -->
+  <section class="tool" id="tool-global">
+    <h2><span data-icon="coins"></span>Global counters <span class="cmd-name">fake players</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        A score that belongs to nobody. Use one for a world timer, a shared shop
+        stock level, a constant you want to divide by, or how far along a
+        server-wide event has got.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="gl-name">Counter name</label>
+          <input type="text" id="gl-name" placeholder="worldTimer" autocomplete="off">
+          <span class="hint"># is added at the front if you leave it off.</span>
+        </div>
+        <div class="field grow">
+          <label for="gl-obj">Objective</label>
+          <input type="text" id="gl-obj" placeholder="Globals" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="gl-value">Starting value</label>
+          <input type="text" id="gl-value" value="0" style="width:130px">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="gl-generate">Generate</button>
+      </div>
+      <div class="output" id="gl-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= MANAGE ======================= -->
+  <section class="tool" id="tool-manage">
+    <h2><span data-icon="trash"></span>Inspect and clear out <span class="cmd-name">list / reset / remove</span></h2>
+    <div class="tool-body">
+      <p class="tool-desc">
+        Seeing what exists, wiping scores between rounds, and deleting an
+        objective for good.
+      </p>
+
+      <div class="field-row">
+        <div class="field grow">
+          <label for="mg-obj">Objective</label>
+          <input type="text" id="mg-obj" placeholder="Coins" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="mg-generate">Generate</button>
+      </div>
+      <div class="output" id="mg-output"></div>
+    </div>
+  </section>
+
+  <!-- ======================= REFERENCE ======================= -->
+  <section class="tool">
+    <h2><span data-icon="book"></span>Every scoreboard command</h2>
+    <div class="tool-body">
+
+      <h3 style="font-size:14px;margin:0 0 10px;color:var(--green)">Objectives</h3>
+      <div class="table-scroll">
+        <table class="ref">
+          <tr><th>Command</th><th>What it does</th></tr>
+          <tr>
+            <td>objectives add &lt;name&gt; dummy [display]</td>
+            <td>Creates an objective. <code>dummy</code> is the only criteria Bedrock has.</td>
+          </tr>
+          <tr>
+            <td>objectives remove &lt;name&gt;</td>
+            <td>Deletes it along with every score on it. No undo.</td>
+          </tr>
+          <tr>
+            <td>objectives list</td>
+            <td>Lists every objective that exists.</td>
+          </tr>
+          <tr>
+            <td>objectives setdisplay &lt;slot&gt; [name] [order]</td>
+            <td>
+              Shows an objective in <code>sidebar</code>, <code>list</code> or
+              <code>belowname</code>. Leave the name off to empty the slot.
+              Order is <code>ascending</code> or <code>descending</code>.
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <h3 style="font-size:14px;margin:22px 0 10px;color:var(--green)">Scores</h3>
+      <div class="table-scroll">
+        <table class="ref">
+          <tr><th>Command</th><th>What it does</th></tr>
+          <tr>
+            <td>players add &lt;target&gt; &lt;obj&gt; &lt;n&gt;</td>
+            <td>Adds n. With n as 0, registers players without changing anything.</td>
+          </tr>
+          <tr>
+            <td>players remove &lt;target&gt; &lt;obj&gt; &lt;n&gt;</td>
+            <td>Subtracts n. Scores are allowed to go negative.</td>
+          </tr>
+          <tr>
+            <td>players set &lt;target&gt; &lt;obj&gt; &lt;n&gt;</td>
+            <td>Overwrites the score with n.</td>
+          </tr>
+          <tr>
+            <td>players reset &lt;target&gt; [obj]</td>
+            <td>
+              Takes them off the objective entirely — not the same as setting 0.
+              They stop matching <code>scores={…}</code>. Omit the objective to
+              clear them from all of them.
+            </td>
+          </tr>
+          <tr>
+            <td>players list [target]</td>
+            <td>Prints scores into chat.</td>
+          </tr>
+          <tr>
+            <td>players test &lt;target&gt; &lt;obj&gt; &lt;min&gt; [max]</td>
+            <td>Reports whether a score sits in a range. <code>*</code> means unbounded.</td>
+          </tr>
+          <tr>
+            <td>players random &lt;target&gt; &lt;obj&gt; &lt;min&gt; &lt;max&gt;</td>
+            <td>Sets a random value. Both ends included.</td>
+          </tr>
+          <tr>
+            <td>players operation &lt;target&gt; &lt;obj&gt; &lt;op&gt; &lt;source&gt; &lt;obj&gt;</td>
+            <td>Combines two scores. Operations below.</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3 style="font-size:14px;margin:22px 0 10px;color:var(--green)">Operations</h3>
+      <div class="table-scroll">
+        <table class="ref">
+          <tr><td>=</td><td>Copy the source score onto the target</td></tr>
+          <tr><td>+=</td><td>Add the source to the target</td></tr>
+          <tr><td>-=</td><td>Subtract the source from the target</td></tr>
+          <tr><td>*=</td><td>Multiply</td></tr>
+          <tr><td>/=</td><td>Divide, whole numbers only. Dividing by 0 fails and changes nothing.</td></tr>
+          <tr><td>%=</td><td>Remainder after dividing</td></tr>
+          <tr><td>&lt;</td><td>Keep whichever score is smaller</td></tr>
+          <tr><td>&gt;</td><td>Keep whichever score is larger</td></tr>
+          <tr><td>&gt;&lt;</td><td>Swap the two scores</td></tr>
+        </table>
+      </div>
+
+      <h3 style="font-size:14px;margin:22px 0 10px;color:var(--green)">Ranges in selectors</h3>
+      <div class="table-scroll">
+        <table class="ref">
+          <tr><td>scores={Coins=10..}</td><td>10 or more — what a price check wants</td></tr>
+          <tr><td>scores={Coins=..9}</td><td>9 or less — the matching failure branch</td></tr>
+          <tr><td>scores={Coins=5..10}</td><td>Between 5 and 10, both included</td></tr>
+          <tr><td>scores={Coins=12}</td><td>Exactly 12 — excludes anyone holding 13</td></tr>
+          <tr><td>scores={Coins=!0}</td><td>Anything except 0</td></tr>
+          <tr><td>scores={Quest=1,Coins=10..}</td><td>Both conditions at once</td></tr>
+        </table>
+      </div>
+
+      <p class="msg info" style="margin-top:18px">
+        <span data-icon="info"></span>
+        <span>A player who has never been scored on an objective matches
+        <strong>no</strong> range at all, not even <code>..0</code>. That is why
+        putting everyone on the board with <code>add @a &lt;obj&gt; 0</code> is
+        worth doing up front — otherwise a new player's first purchase silently
+        does nothing.</span>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  CommandCrafter — Minecraft Bedrock command builder.
+  Not affiliated with Mojang or Microsoft.
+</footer>
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/scoreboard.js"></script>
+</body>
+</html>

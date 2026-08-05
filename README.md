@@ -12,7 +12,8 @@ dialogue.
 | --- | --- |
 | `index.html` | Landing page |
 | `build.html` | `/fill`, `/clone`, `/setblock`, clearing entities from a region |
-| `npc.html` | Vendor buy/sell buttons, `/dialogue`, scoreboards, redstone summon chains, area locks |
+| `npc.html` | Vendor buy/sell buttons, `/dialogue`, redstone summon chains, area locks |
+| `scoreboard.html` | Objectives, editing scores, score maths, random rolls, global counters, display slots |
 | `notes.html` | Free-form notes, saved in the browser, with search and export |
 | `reference.html` | Bedrock syntax: coordinates, selectors, ranges, command blocks, colour codes |
 
@@ -90,15 +91,16 @@ pretending to have saved.
 ## Project layout
 
 ```
-index.html   build.html   npc.html   notes.html   reference.html
+index.html   build.html   npc.html   scoreboard.html   notes.html   reference.html
 assets/
   favicon.svg
   css/style.css
   js/icons.js       inline SVG icon set
-  js/common.js      shared helpers: coordinates, clipboard, output rendering
+  js/common.js      shared helpers: coordinates, names, ranges, clipboard, output
   js/data.js        block / item / entity / sound autocomplete lists
   js/build.js       build command generators
   js/npc.js         NPC and gameplay-logic generators
+  js/scoreboard.js  scoreboard generators
   js/notes.js       notes storage, search, export and import
 ```
 

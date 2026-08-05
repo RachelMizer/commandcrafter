@@ -38,16 +38,8 @@ function initiatorHasItem(item, range) {
   return '@initiator[hasitem={item=' + item + ',quantity=' + range + '}]';
 }
 
-function requireName(value, label, problems) {
-  var v = String(value || '').trim();
-  if (!v) problems.push(label + ' is required.');
-  return v;
-}
-
-/* Objective and tag names: no spaces, they break the selector syntax. */
-function cleanName(raw) {
-  return String(raw == null ? '' : raw).trim().replace(/\s+/g, '_');
-}
+/* cleanName, requireName and scoreRange live in common.js -- the scoreboard
+   page needs them too. */
 
 /* ---------------- dialogue: open a scene ---------------- */
 
@@ -212,64 +204,8 @@ function generateBuy() {
   });
 }
 
-/* ---------------- scoreboard setup ---------------- */
-
-function generateScoreboard() {
-  var problems = [];
-  var objective = cleanName(requireName(val('sc-name'), 'Objective name', problems));
-  if (problems.length) return renderError('sc-output', problems);
-
-  var display = String(val('sc-display') || '').trim();
-  var slot = val('sc-slot') || 'sidebar';
-
-  var setup = ['/scoreboard objectives add ' + objective + ' dummy' +
-    (display ? ' "' + display + '"' : '')];
-  if (slot !== 'none') {
-    setup.push('/scoreboard objectives setdisplay ' + slot + ' ' + objective);
-  }
-
-  var start = intVal('sc-start', 0);
-
-  var teardown = [];
-  if (slot !== 'none') teardown.push('/scoreboard objectives setdisplay ' + slot);
-  teardown.push('/scoreboard objectives remove ' + objective);
-
-  render('sc-output', {
-    messages: [{
-      type: 'info',
-      text: '"add @a ' + objective + ' 0" is the safe way to put players on the board ' +
-        '— it registers anyone missing without touching scores that already exist.'
-    }],
-    groups: [
-      { title: 'Create the objective', commands: setup },
-      {
-        title: 'Everyday commands',
-        commands: [
-          '/scoreboard players add @a ' + objective + ' 0',
-          '/scoreboard players add @p ' + objective + ' 1',
-          '/scoreboard players remove @p ' + objective + ' 1'
-        ],
-        note: 'Run these one at a time as you need them, not as a block.'
-      },
-      {
-        title: 'Resetting — these overwrite existing scores',
-        commands: [
-          '/scoreboard players set @p ' + objective + ' ' + start,
-          '/scoreboard players set @a ' + objective + ' ' + start,
-          '/scoreboard players reset @p ' + objective
-        ],
-        note: 'The @a line wipes every balance on the server. There is no undo.'
-      },
-      {
-        title: 'Tear down',
-        commands: teardown,
-        note: slot !== 'none'
-          ? 'setdisplay with no objective name clears the slot.'
-          : ''
-      }
-    ]
-  });
-}
+/* Scoreboard setup lives on scoreboard.html now -- one implementation instead
+   of two that drift. */
 
 /* ---------------- redstone-triggered summon ----------------
 
@@ -477,7 +413,6 @@ document.addEventListener('DOMContentLoaded', function () {
   on('dlg-generate', 'click', generateDialogue);
   on('sell-generate', 'click', generateSell);
   on('buy-generate', 'click', generateBuy);
-  on('sc-generate', 'click', generateScoreboard);
   on('ss-generate', 'click', generateSummonShop);
   on('tc-generate', 'click', generateTagChain);
   on('al-generate', 'click', generateAccessLock);
@@ -485,7 +420,6 @@ document.addEventListener('DOMContentLoaded', function () {
   submitOnEnter('tool-dialogue', generateDialogue);
   submitOnEnter('tool-sell', generateSell);
   submitOnEnter('tool-buy', generateBuy);
-  submitOnEnter('tool-scoreboard', generateScoreboard);
   submitOnEnter('tool-summon-shop', generateSummonShop);
   submitOnEnter('tool-tag-chain', generateTagChain);
   submitOnEnter('tool-access-lock', generateAccessLock);

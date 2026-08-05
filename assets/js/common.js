@@ -164,6 +164,28 @@ function cleanId(raw) {
   return String(raw == null ? '' : raw).trim().toLowerCase().replace(/\s+/g, '_');
 }
 
+/* Objective and tag names keep their capitals -- Coins and coins are two
+   different objectives -- but spaces would break the selector syntax. */
+function cleanName(raw) {
+  return String(raw == null ? '' : raw).trim().replace(/\s+/g, '_');
+}
+
+function requireName(value, label, problems) {
+  var v = String(value || '').trim();
+  if (!v) problems.push(label + ' is required.');
+  return v;
+}
+
+/* Turns a min/max pair into a selector range: "10..", "..9", "5..10", "12". */
+function scoreRange(minRaw, maxRaw) {
+  var min = String(minRaw == null ? '' : minRaw).trim();
+  var max = String(maxRaw == null ? '' : maxRaw).trim();
+  if (min === '' && max === '') return null;
+  if (max === '') return min + '..';
+  if (min === '') return '..' + max;
+  return min === max ? min : min + '..' + max;
+}
+
 /* ---------------- clipboard ---------------- */
 
 function copyText(text, btn) {

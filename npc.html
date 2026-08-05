@@ -16,6 +16,7 @@
       <a href="index.html"><span data-icon="home"></span>Home</a>
       <a href="build.html"><span data-icon="cube"></span>Build</a>
       <a href="npc.html"><span data-icon="npc"></span>NPCs</a>
+      <a href="scoreboard.html"><span data-icon="chart"></span>Scoreboards</a>
       <a href="notes.html"><span data-icon="note"></span>Notes</a>
       <a href="reference.html"><span data-icon="book"></span>Reference</a>
     </nav>
@@ -242,44 +243,19 @@ cooked_chicken 2"></textarea>
   </section>
 
   <!-- ============================ SCOREBOARD ============================ -->
-  <section class="tool" id="tool-scoreboard">
-    <h2><span data-icon="chart"></span>Set up a scoreboard <span class="cmd-name">/scoreboard</span></h2>
+  <section class="tool">
+    <h2><span data-icon="chart"></span>Currencies and quest flags <span class="cmd-name">scoreboards</span></h2>
     <div class="tool-body">
       <p class="tool-desc">
-        Every currency, quest flag and purchase counter needs an objective before
-        any vendor button will work.
+        Every vendor on this page needs its objective to exist first — nothing can
+        hold a score until it does. Creating objectives, editing scores, score
+        maths and global counters all moved to their own page.
       </p>
-
-      <div class="field-row">
-        <div class="field grow">
-          <label for="sc-name">Objective name</label>
-          <input type="text" id="sc-name" placeholder="Coins" autocomplete="off">
-          <span class="hint">No spaces — this goes inside selectors.</span>
-        </div>
-        <div class="field grow">
-          <label for="sc-display">Display name</label>
-          <input type="text" id="sc-display" placeholder="Coins">
-          <span class="hint">Shown on screen; spaces are fine here.</span>
-        </div>
-        <div class="field">
-          <label for="sc-slot">Show it</label>
-          <select id="sc-slot">
-            <option value="sidebar">sidebar</option>
-            <option value="list">list (pause menu)</option>
-            <option value="belowname">belowname</option>
-            <option value="none">don't display</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="sc-start">Starting score</label>
-          <input type="text" id="sc-start" value="0" style="width:110px">
-        </div>
-      </div>
-
       <div class="actions">
-        <button type="button" class="primary" id="sc-generate">Generate</button>
+        <a class="linkbtn" href="scoreboard.html">
+          <span data-icon="chart"></span>Go to scoreboards
+        </a>
       </div>
-      <div class="output" id="sc-output"></div>
     </div>
   </section>
 
